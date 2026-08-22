@@ -180,7 +180,57 @@
 </div>
 
 <div class="toast" id="toast"></div>
+
+<!-- ── AI HR Assistant widget ──────────────────────────────────── -->
+<div id="chatWidget">
+
+  <!-- Floating button -->
+  <button id="chatToggleBtn" title="HR Assistant (Preview)">
+    <span id="chatBtnIcon">✨</span>
+  </button>
+
+  <!-- Chat window -->
+  <div id="chatWindow">
+    <div id="chatHeader">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#635bff,#a855f7);display:grid;place-items:center;color:white;font-size:16px;">✨</div>
+        <div>
+          <strong style="display:block;font-size:14px;">Dayflow AI Assistant</strong>
+          <span style="font-size:11px;color:#a9a5c8;">Future Enhancement Preview</span>
+        </div>
+      </div>
+      <button id="chatCloseBtn">✕</button>
+    </div>
+
+    <div id="chatBody">
+      <!-- Welcome bubble -->
+      <div class="chat-bubble bot">
+        <p>Hi! I'm the <strong>Dayflow HR Assistant</strong> — a future AI feature for Dayflow HRMS.</p>
+        <p style="margin-top:6px;font-size:12px;color:#9993c4;">Try one of the questions below or type your own.</p>
+      </div>
+
+      <!-- Preset quick questions -->
+      <div id="chatPresets">
+        <button class="chat-preset" data-q="How do I apply for leave?">How do I apply for leave?</button>
+        <button class="chat-preset" data-q="How can I check my attendance?">How can I check my attendance?</button>
+        <button class="chat-preset" data-q="When will my salary be credited?">When will my salary be credited?</button>
+        <button class="chat-preset" data-q="How do I update my profile?">How do I update my profile?</button>
+      </div>
+    </div>
+
+    <div id="chatFooter">
+      <input type="text" id="chatInput" placeholder="Type a question…" autocomplete="off">
+      <button id="chatSendBtn">➤</button>
+    </div>
+
+    <div id="chatDisclaimer">
+      ⚠ This is a <strong>demo preview</strong> — full AI integration is a future enhancement for Dayflow HRMS.
+    </div>
+  </div>
+</div>
+
 <script src="js/api.js"></script>
 <script src="js/app.js"></script>
+<script src="js/chatbot.js"></script>
 </body>
 </html>
