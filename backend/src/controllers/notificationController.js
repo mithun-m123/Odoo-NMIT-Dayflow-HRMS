@@ -40,20 +40,21 @@ const markAllAsRead = asyncHandler(async (req, res) => {
 });
 
 // GET /notifications/admin/pending-count — admin only
-// Returns count of unread LEAVE_REQUEST notifications + total pending leaves
 const getPendingLeaveCount = asyncHandler(async (req, res) => {
-  const [unreadRequests, pendingLeaves] = await Promise.all([
+  const [unreadRequests, pendingLeaves, pendingRegistrations] = await Promise.all([
     Notification.countDocuments({
       employeeId: req.user.employeeId,
-      type: 'LEAVE_REQUEST',
+      type: { $in: ['LEAVE_REQUEST', 'REGISTRATION_REQUEST'] },
       isRead: false,
     }),
     Leave.countDocuments({ status: 'PENDING' }),
+    // Count users awaiting approval
+    require('../models/User').countDocuments({ status: 'PENDING_APPROVAL' }),
   ]);
 
   res.status(200).json({
     success: true,
-    data: { unreadRequests, pendingLeaves },
+    data: { unreadRequests, pendingLeaves, pendingRegistrations },
   });
 });
 

@@ -1,6 +1,6 @@
 /**
- * admin.js — Admin portal: leave queue, history, employees
- * Requires ADMIN role. Redirects otherwise.
+ * admin.js — Admin portal
+ * Tabs: Onboarding | Leave Requests | Leave History | Attendance | Payroll | Employees
  */
 
 requireAdmin();
@@ -27,9 +27,12 @@ document.querySelectorAll('.admin-tab').forEach(btn => {
     const panel = document.getElementById('tab-' + btn.dataset.tab);
     if (panel) panel.classList.add('active');
 
-    if (btn.dataset.tab === 'pending')   loadPendingLeaves();
-    if (btn.dataset.tab === 'history')   loadHistory();
-    if (btn.dataset.tab === 'employees') loadEmployees();
+    if (btn.dataset.tab === 'onboarding') loadOnboarding();
+    if (btn.dataset.tab === 'pending')    loadPendingLeaves();
+    if (btn.dataset.tab === 'history')    loadHistory();
+    if (btn.dataset.tab === 'employees')  loadEmployees();
+    if (btn.dataset.tab === 'attendance') loadAdminAttendance();
+    if (btn.dataset.tab === 'payroll')    resetAdminPayroll();
   });
 });
 
@@ -72,58 +75,250 @@ function fmt(d) {
   return new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
 }
 
+function fmtINR(n) {
+  return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(n || 0);
+}
+
 // ─── Stats banner ─────────────────────────────────────────────────────────────
 
 async function loadStats() {
   try {
-    const [pendingRes, empRes, todayAttRes] = await Promise.allSettled([
+    const [pendingRes, empRes, pendingRegRes] = await Promise.allSettled([
       api.listAllLeaves({ status: 'PENDING', limit: 1 }),
       api.listEmployees({ limit: 1 }),
-      api.listAllAttendance({ date: new Date().toISOString().slice(0, 10), status: 'LEAVE', limit: 1 }),
+      api.getPendingRegistrations({ limit: 1 }),
     ]);
 
     if (pendingRes.status === 'fulfilled') {
       const n = pendingRes.value.data.pagination?.total ?? 0;
       document.getElementById('statPending').textContent = n;
       const badge = document.getElementById('pendingBadge');
-      if (badge) badge.textContent = n > 0 ? n : '';
+      if (badge) { badge.textContent = n > 0 ? n : ''; badge.style.display = n > 0 ? '' : 'none'; }
     }
+
     if (empRes.status === 'fulfilled') {
       document.getElementById('statEmployees').textContent =
         empRes.value.data.pagination?.total ?? '—';
     }
-    if (todayAttRes.status === 'fulfilled') {
-      document.getElementById('statOnLeave').textContent =
-        todayAttRes.value.data.pagination?.total ?? '—';
+
+    if (pendingRegRes.status === 'fulfilled') {
+      const r = pendingRegRes.value.data.pagination?.total ?? 0;
+      document.getElementById('statApproved').textContent = r;
+      const obBadge = document.getElementById('onboardingBadge');
+      if (obBadge) {
+        obBadge.textContent = r > 0 ? r : '';
+        obBadge.style.display = r > 0 ? '' : 'none';
+      }
     }
 
-    // Approved today
-    const today = new Date().toISOString().slice(0, 10);
-    const approvedRes = await api.listAllLeaves({ status: 'APPROVED', limit: 100 }).catch(() => null);
-    if (approvedRes) {
-      const todayApproved = approvedRes.data.items.filter(l =>
-        l.decision?.decidedOn && new Date(l.decision.decidedOn).toISOString().slice(0, 10) === today
-      ).length;
-      document.getElementById('statApproved').textContent = todayApproved;
-    }
+    // On-leave today via attendance
+    try {
+      const attRes = await api.listAllAttendance({
+        date: new Date().toISOString().slice(0, 10),
+        status: 'LEAVE',
+        limit: 1,
+      });
+      document.getElementById('statOnLeave').textContent =
+        attRes.data?.pagination?.total ?? 0;
+    } catch (_) {}
+
   } catch (_) {}
 }
 
-// ─── Pending queue ────────────────────────────────────────────────────────────
+// ════════════════════════════════════════════════════════════
+//  ONBOARDING TAB — pending employee registrations
+// ════════════════════════════════════════════════════════════
+
+window.loadOnboarding = async function () {
+  const container = document.getElementById('onboardingQueue');
+  if (!container) return;
+  container.innerHTML = '<p class="state-msg">Loading pending registrations…</p>';
+
+  try {
+    const res   = await api.getPendingRegistrations({ limit: 50 });
+    const items = res.data.items || [];
+
+    if (items.length === 0) {
+      container.innerHTML = `
+        <div style="text-align:center;padding:60px 20px;">
+          <div style="font-size:52px;">🎉</div>
+          <h3 style="margin:16px 0 8px;">No pending registrations</h3>
+          <p style="color:var(--muted);font-size:14px;">All employee accounts are up to date.</p>
+        </div>`;
+      return;
+    }
+
+    container.innerHTML = '';
+    items.forEach(u => container.appendChild(buildOnboardCard(u)));
+
+    // Update badge
+    const obBadge = document.getElementById('onboardingBadge');
+    if (obBadge) {
+      obBadge.textContent = items.length;
+      obBadge.style.display = '';
+    }
+  } catch (err) {
+    container.innerHTML = `<p class="state-msg">Failed to load: ${err.message}</p>`;
+  }
+};
+
+function buildOnboardCard(u) {
+  const card = document.createElement('div');
+  card.className = 'leave-card';
+  card.id = `onboard-card-${u.employeeId}`;
+
+  const roleColor = u.role === 'ADMIN' ? 'var(--orange)' : 'var(--primary)';
+  const roleBg    = u.role === 'ADMIN' ? 'var(--orange-light)' : 'var(--primary-light)';
+  const registered = fmt(u.createdAt);
+
+  card.innerHTML = `
+    <div class="leave-card-left">
+      <div class="leave-avatar" style="background:linear-gradient(135deg,${roleColor},#a855f7);">
+        ${initials(u.fullName)}
+      </div>
+      <div class="leave-card-meta">
+        <strong style="font-size:16px;">${u.fullName}</strong>
+        <span>${u.email}</span>
+        <div class="leave-tags" style="margin-top:10px;">
+          <span class="leave-tag" style="background:${roleBg};color:${roleColor};">
+            ${u.role === 'ADMIN' ? 'HR / Admin' : 'Employee'}
+          </span>
+          <span class="leave-tag" style="background:#f0f4ff;color:#3b5bdb;">
+            ID: ${u.employeeId}
+          </span>
+          <span class="leave-tag" style="background:#f3f4f6;color:#6b7280;">
+            Registered: ${registered}
+          </span>
+        </div>
+      </div>
+    </div>
+    <div class="leave-card-actions" id="onboard-actions-${u.employeeId}">
+      <button class="btn-approve"
+        onclick="openOnboardModal('${u.employeeId}', 'approve', '${u.fullName.replace(/'/g,"\\'")}', '${u.email}')">
+        ✓ Approve
+      </button>
+      <button class="btn-reject"
+        onclick="openOnboardModal('${u.employeeId}', 'reject', '${u.fullName.replace(/'/g,"\\'")}', '${u.email}')">
+        ✕ Reject
+      </button>
+    </div>
+  `;
+  return card;
+}
+
+// ─── Onboarding modal ─────────────────────────────────────────────────────────
+
+let _obEmpId  = null;
+let _obAction = null;
+
+window.openOnboardModal = function (employeeId, action, name, email) {
+  _obEmpId  = employeeId;
+  _obAction = action;
+
+  const modal      = document.getElementById('onboardModal');
+  const title      = document.getElementById('onboardModalTitle');
+  const subtitle   = document.getElementById('onboardModalSubtitle');
+  const confirmBtn = document.getElementById('onboardConfirmBtn');
+  const extra      = document.getElementById('onboardApproveExtra');
+  const noteLabel  = document.getElementById('onboardNoteLabel');
+  const noteEl     = document.getElementById('onboardNote');
+  const desig      = document.getElementById('onboardDesig');
+  const dept       = document.getElementById('onboardDept');
+
+  noteEl.value = '';
+  if (desig) desig.value = '';
+  if (dept)  dept.value  = '';
+
+  if (action === 'approve') {
+    title.textContent         = '✅ Approve Registration';
+    title.style.color         = 'var(--green)';
+    confirmBtn.style.background = 'var(--green)';
+    confirmBtn.textContent    = 'Approve & Activate';
+    if (extra)     extra.style.display     = 'block';
+    if (noteLabel) noteLabel.textContent   = 'Welcome note (optional)';
+    noteEl.placeholder = 'e.g. Welcome aboard! Your first day is Monday.';
+  } else {
+    title.textContent         = '❌ Reject Registration';
+    title.style.color         = 'var(--red)';
+    confirmBtn.style.background = 'var(--red)';
+    confirmBtn.textContent    = 'Reject Registration';
+    if (extra)     extra.style.display     = 'none';
+    if (noteLabel) noteLabel.textContent   = 'Reason for rejection (required)';
+    noteEl.placeholder = 'e.g. Employee ID not found in HR records.';
+  }
+
+  subtitle.textContent = `${name} · ${email} · ID: ${employeeId}`;
+  modal.style.display  = 'flex';
+  noteEl.focus();
+};
+
+window.closeOnboardModal = function () {
+  document.getElementById('onboardModal').style.display = 'none';
+  _obEmpId  = null;
+  _obAction = null;
+};
+
+document.getElementById('onboardModal')?.addEventListener('click', function (e) {
+  if (e.target === this) closeOnboardModal();
+});
+
+document.getElementById('onboardConfirmBtn')?.addEventListener('click', async () => {
+  if (!_obEmpId || !_obAction) return;
+
+  const note = document.getElementById('onboardNote').value.trim();
+
+  if (_obAction === 'reject' && !note) {
+    showToast('Please provide a reason for rejection.');
+    document.getElementById('onboardNote').focus();
+    return;
+  }
+
+  const btn = document.getElementById('onboardConfirmBtn');
+  btn.disabled    = true;
+  btn.textContent = 'Processing…';
+
+  try {
+    if (_obAction === 'approve') {
+      const desig = document.getElementById('onboardDesig')?.value.trim();
+      const dept  = document.getElementById('onboardDept')?.value.trim();
+      const jobDetails = (desig || dept)
+        ? { designation: desig, department: dept }
+        : null;
+      await api.approveEmployee(_obEmpId, note, jobDetails);
+      showToast(`✅ ${_obEmpId} approved — account is now active.`);
+    } else {
+      await api.rejectEmployee(_obEmpId, note);
+      showToast(`❌ ${_obEmpId} rejected — employee has been notified.`);
+    }
+
+    closeOnboardModal();
+    loadOnboarding();
+    loadStats();
+  } catch (err) {
+    showToast('Failed: ' + (err.message || 'Unknown error'));
+  } finally {
+    btn.disabled    = false;
+    btn.textContent = _obAction === 'approve' ? 'Approve & Activate' : 'Reject Registration';
+  }
+});
+
+// ════════════════════════════════════════════════════════════
+//  LEAVE REQUESTS TAB
+// ════════════════════════════════════════════════════════════
 
 window.loadPendingLeaves = async function () {
   const container = document.getElementById('pendingQueue');
   container.innerHTML = '<p class="state-msg">Loading…</p>';
 
-  const search   = document.getElementById('pendingSearch')?.value.trim().toLowerCase() || '';
+  const search     = document.getElementById('pendingSearch')?.value.trim().toLowerCase() || '';
   const typeFilter = document.getElementById('pendingTypeFilter')?.value || '';
 
   try {
     const params = { status: 'PENDING', limit: 50 };
     if (typeFilter) params.leaveType = typeFilter;
 
-    const res   = await api.listAllLeaves(params);
-    let items   = res.data.items || [];
+    const res  = await api.listAllLeaves(params);
+    let items  = res.data.items || [];
 
     if (search) {
       items = items.filter(l =>
@@ -137,7 +332,7 @@ window.loadPendingLeaves = async function () {
         <div style="text-align:center;padding:60px 20px;">
           <div style="font-size:48px;">✅</div>
           <h3 style="margin:16px 0 8px;">All caught up!</h3>
-          <p style="color:var(--muted);font-size:13px;">No pending leave requests right now.</p>
+          <p style="color:var(--muted);font-size:14px;">No pending leave requests.</p>
         </div>`;
       return;
     }
@@ -150,10 +345,10 @@ window.loadPendingLeaves = async function () {
 };
 
 function buildLeaveCard(leave, showActions) {
-  const days    = dayCount(leave.startDate, leave.endDate);
-  const card    = document.createElement('div');
+  const days = dayCount(leave.startDate, leave.endDate);
+  const card = document.createElement('div');
   card.className = `leave-card ${leave.status !== 'PENDING' ? 'decided' : ''}`;
-  card.id       = `leave-card-${leave._id}`;
+  card.id = `leave-card-${leave._id}`;
 
   card.innerHTML = `
     <div class="leave-card-left">
@@ -179,18 +374,24 @@ function buildLeaveCard(leave, showActions) {
     <div class="leave-card-actions" id="actions-${leave._id}">
       ${showActions && leave.status === 'PENDING' ? `
         <input class="comment-input" id="comment-${leave._id}" placeholder="Add comment…">
-        <button class="btn-approve" onclick="openDecideModal('${leave._id}', 'APPROVED', '${(leave.employeeName || leave.employeeId).replace(/'/g, "\\'")}', '${leave.startDate}', '${leave.endDate}')">✓ Approve</button>
-        <button class="btn-reject"  onclick="openDecideModal('${leave._id}', 'REJECTED', '${(leave.employeeName || leave.employeeId).replace(/'/g, "\\'")}', '${leave.startDate}', '${leave.endDate}')">✕ Reject</button>
+        <button class="btn-approve"
+          onclick="openDecideModal('${leave._id}','APPROVED','${(leave.employeeName||leave.employeeId).replace(/'/g,"\\'")}','${leave.startDate}','${leave.endDate}')">
+          ✓ Approve
+        </button>
+        <button class="btn-reject"
+          onclick="openDecideModal('${leave._id}','REJECTED','${(leave.employeeName||leave.employeeId).replace(/'/g,"\\'")}','${leave.startDate}','${leave.endDate}')">
+          ✕ Reject
+        </button>
       ` : statusBadge(leave.status)}
     </div>
   `;
   return card;
 }
 
-// ─── Decide modal ─────────────────────────────────────────────────────────────
+// ─── Leave decide modal ───────────────────────────────────────────────────────
 
-let _modalLeaveId   = null;
-let _modalDecision  = null;
+let _modalLeaveId  = null;
+let _modalDecision = null;
 
 window.openDecideModal = function (leaveId, decision, name, start, end) {
   _modalLeaveId  = leaveId;
@@ -202,20 +403,18 @@ window.openDecideModal = function (leaveId, decision, name, start, end) {
   const confirm  = document.getElementById('modalConfirmBtn');
   const comment  = document.getElementById('modalComment');
 
-  // Pre-fill comment from inline input if present
-  const inlineComment = document.getElementById(`comment-${leaveId}`)?.value.trim() || '';
-  comment.value = inlineComment;
+  comment.value = document.getElementById(`comment-${leaveId}`)?.value.trim() || '';
 
   if (decision === 'APPROVED') {
-    title.textContent     = '✅ Approve Leave Request';
-    title.style.color     = 'var(--green)';
-    confirm.style.background = 'var(--green)';
-    confirm.textContent   = 'Confirm Approval';
+    title.textContent         = '✅ Approve Leave Request';
+    title.style.color         = 'var(--green)';
+    confirm.style.background  = 'var(--green)';
+    confirm.textContent       = 'Confirm Approval';
   } else {
-    title.textContent     = '❌ Reject Leave Request';
-    title.style.color     = 'var(--red)';
-    confirm.style.background = 'var(--red)';
-    confirm.textContent   = 'Confirm Rejection';
+    title.textContent         = '❌ Reject Leave Request';
+    title.style.color         = 'var(--red)';
+    confirm.style.background  = 'var(--red)';
+    confirm.textContent       = 'Confirm Rejection';
   }
 
   subtitle.textContent = `${name} · ${fmt(start)} → ${fmt(end)}`;
@@ -229,6 +428,10 @@ window.closeModal = function () {
   _modalDecision = null;
 };
 
+document.getElementById('decideModal')?.addEventListener('click', function (e) {
+  if (e.target === this) closeModal();
+});
+
 document.getElementById('modalConfirmBtn')?.addEventListener('click', async () => {
   if (!_modalLeaveId || !_modalDecision) return;
 
@@ -240,11 +443,11 @@ document.getElementById('modalConfirmBtn')?.addEventListener('click', async () =
   try {
     await api.decideLeave(_modalLeaveId, _modalDecision, comment);
     closeModal();
-    showToast(_modalDecision === 'APPROVED' ? '✅ Leave approved and employee notified.' : '❌ Leave rejected and employee notified.');
-    // Refresh all relevant data
+    showToast(_modalDecision === 'APPROVED'
+      ? '✅ Leave approved — employee notified.'
+      : '❌ Leave rejected — employee notified.');
     loadPendingLeaves();
     loadStats();
-    initAdminBell();
   } catch (err) {
     showToast('Failed: ' + (err.message || 'Unknown error'));
   } finally {
@@ -253,12 +456,9 @@ document.getElementById('modalConfirmBtn')?.addEventListener('click', async () =
   }
 });
 
-// Close modal on backdrop click
-document.getElementById('decideModal')?.addEventListener('click', function (e) {
-  if (e.target === this) closeModal();
-});
-
-// ─── History table ────────────────────────────────────────────────────────────
+// ════════════════════════════════════════════════════════════
+//  LEAVE HISTORY TAB
+// ════════════════════════════════════════════════════════════
 
 window.loadHistory = async function () {
   const tbody = document.getElementById('historyBody');
@@ -288,12 +488,17 @@ window.loadHistory = async function () {
             <span class="emp-avatar-sm">${initials(l.employeeName || l.employeeId)}</span>
             ${l.employeeName || l.employeeId}
           </td>
-          <td><span class="leave-tag ${leaveTagClass(l.leaveType)}" style="padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;">${leaveTypeLabel(l.leaveType)}</span></td>
+          <td>
+            <span class="leave-tag ${leaveTagClass(l.leaveType)}"
+              style="padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;">
+              ${leaveTypeLabel(l.leaveType)}
+            </span>
+          </td>
           <td>${fmt(l.startDate)}</td>
           <td>${fmt(l.endDate)}</td>
           <td>${days}</td>
           <td>${statusBadge(l.status)}</td>
-          <td>${l.decision?.decidedBy || '—'}</td>
+          <td style="font-size:13px;color:var(--muted);">${l.decision?.decidedBy || '—'}</td>
           <td style="max-width:160px;color:var(--muted);font-size:12px;">${l.decision?.comment || '—'}</td>
         </tr>`;
     }).join('');
@@ -302,7 +507,9 @@ window.loadHistory = async function () {
   }
 };
 
-// ─── Employees table ──────────────────────────────────────────────────────────
+// ════════════════════════════════════════════════════════════
+//  EMPLOYEES TAB
+// ════════════════════════════════════════════════════════════
 
 window.loadEmployees = async function () {
   const tbody = document.getElementById('employeeBody');
@@ -326,15 +533,16 @@ window.loadEmployees = async function () {
       <tr>
         <td>
           <span class="emp-avatar-sm">${initials(u.fullName)}</span>
-          ${u.fullName}
+          <strong>${u.fullName}</strong>
         </td>
-        <td style="color:var(--muted);font-size:12px;">${u.employeeId}</td>
+        <td style="color:var(--muted);font-size:13px;">${u.employeeId}</td>
         <td>${u.designation || '—'}</td>
         <td>${u.department  || '—'}</td>
         <td>
-          <button onclick="viewBalance('${u.employeeId}')"
-            style="background:#f0eeff;color:var(--primary);border:none;padding:5px 12px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;">
-            View Balance
+          <button onclick="viewEmpLeaves('${u.employeeId}')"
+            style="background:var(--primary-light);color:var(--primary);border:none;
+                   padding:6px 14px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;">
+            View Leaves
           </button>
         </td>
       </tr>`
@@ -344,20 +552,17 @@ window.loadEmployees = async function () {
   }
 };
 
-window.viewBalance = async function (empId) {
-  try {
-    const res = await api.listAllLeaves({ employeeId: empId, status: 'APPROVED', limit: 1 });
-    showToast(`Leave history loaded for ${empId}. Check History tab.`);
-    document.getElementById('historyStatusFilter').value = 'APPROVED';
-    document.querySelectorAll('.admin-tab').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-    document.querySelector('[data-tab="history"]').classList.add('active');
-    document.getElementById('tab-history').classList.add('active');
-    loadHistory();
-  } catch (_) {}
+window.viewEmpLeaves = function (empId) {
+  document.getElementById('historyStatusFilter').value = '';
+  document.getElementById('historyTypeFilter').value   = '';
+  document.querySelectorAll('.admin-tab').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelector('[data-tab="history"]').classList.add('active');
+  document.getElementById('tab-history').classList.add('active');
+  loadHistory();
 };
 
-// ─── Search handlers (live) ───────────────────────────────────────────────────
+// ─── Search (live) ────────────────────────────────────────────────────────────
 
 document.getElementById('pendingSearch')?.addEventListener('input', () => {
   clearTimeout(window._searchTimer);
@@ -373,30 +578,10 @@ document.getElementById('pendingTypeFilter')?.addEventListener('change',   loadP
 document.getElementById('historyStatusFilter')?.addEventListener('change', loadHistory);
 document.getElementById('historyTypeFilter')?.addEventListener('change',   loadHistory);
 
-// ─── Notification bell ────────────────────────────────────────────────────────
+// ════════════════════════════════════════════════════════════
+//  ATTENDANCE RECORDS TAB (SRS 3.2.2)
+// ════════════════════════════════════════════════════════════
 
-initNotificationBell();
-initAdminBell();
-
-// ─── Initial load ─────────────────────────────────────────────────────────────
-
-loadStats();
-loadPendingLeaves();
-
-
-// ─── Tab handler: trigger load on new tabs ────────────────────────────────────
-// Patch the existing tab listener to also handle new tabs
-const _origTabListener = document.querySelectorAll('.admin-tab');
-_origTabListener.forEach(btn => {
-  btn.addEventListener('click', () => {
-    if (btn.dataset.tab === 'attendance') loadAdminAttendance();
-    if (btn.dataset.tab === 'payroll')    resetAdminPayroll();
-  });
-});
-
-// ─── ATTENDANCE RECORDS (SRS 3.2.2) ──────────────────────────────────────────
-
-// Set default date to today
 const attDateEl = document.getElementById('attDateFilter');
 if (attDateEl && !attDateEl.value) attDateEl.value = new Date().toISOString().slice(0, 10);
 
@@ -405,9 +590,9 @@ window.loadAdminAttendance = async function () {
   if (!tbody) return;
   tbody.innerHTML = '<tr><td colspan="6" class="state-msg">Loading…</td></tr>';
 
-  const date    = document.getElementById('attDateFilter')?.value || '';
-  const empId   = document.getElementById('attEmpFilter')?.value.trim() || '';
-  const status  = document.getElementById('attStatusFilter')?.value || '';
+  const date   = document.getElementById('attDateFilter')?.value  || '';
+  const empId  = document.getElementById('attEmpFilter')?.value.trim() || '';
+  const status = document.getElementById('attStatusFilter')?.value || '';
 
   try {
     const params = { limit: 100 };
@@ -419,7 +604,7 @@ window.loadAdminAttendance = async function () {
     const items = res.data?.items || [];
 
     if (items.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="6" class="state-msg">No attendance records found.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="6" class="state-msg">No records found.</td></tr>';
       return;
     }
 
@@ -427,8 +612,8 @@ window.loadAdminAttendance = async function () {
     const statusCol = { PRESENT: 'var(--green)', HALF_DAY: 'var(--orange)', LEAVE: 'var(--primary)', ABSENT: 'var(--red)' };
 
     tbody.innerHTML = items.map(r => {
-      const checkin  = r.checkIn  ? new Date(r.checkIn).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '—';
-      const checkout = r.checkOut ? new Date(r.checkOut).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '—';
+      const ci = r.checkIn  ? new Date(r.checkIn).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '—';
+      const co = r.checkOut ? new Date(r.checkOut).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '—';
       let worked = '—';
       if (r.checkIn && r.checkOut) {
         const s = Math.floor((new Date(r.checkOut) - new Date(r.checkIn)) / 1000);
@@ -440,8 +625,8 @@ window.loadAdminAttendance = async function () {
       return `<tr>
         <td><span class="emp-avatar-sm">${initials(r.employeeId)}</span>${r.employeeId}</td>
         <td>${r.date}</td>
-        <td>${checkin}</td>
-        <td>${checkout}</td>
+        <td>${ci}</td>
+        <td>${co}</td>
         <td>${worked}</td>
         <td><span class="status ${sc}" style="${sc ? '' : `background:#f0eeff;color:${col};`}">${lbl}</span></td>
       </tr>`;
@@ -451,25 +636,30 @@ window.loadAdminAttendance = async function () {
   }
 };
 
-// ─── PAYROLL MANAGEMENT (SRS 3.6.2) ──────────────────────────────────────────
+// ════════════════════════════════════════════════════════════
+//  PAYROLL MANAGEMENT TAB (SRS 3.6.2)
+// ════════════════════════════════════════════════════════════
 
 let _apTargetEmpId = null;
 
 function resetAdminPayroll() {
   _apTargetEmpId = null;
-  document.getElementById('adminPayrollCard')?.setAttribute('style', 'display:none;');
-  document.getElementById('adminPayrollEmpty')?.setAttribute('style', 'display:block;text-align:center;padding:48px;color:var(--muted);');
+  const card  = document.getElementById('adminPayrollCard');
+  const empty = document.getElementById('adminPayrollEmpty');
+  if (card)  card.style.display  = 'none';
+  if (empty) empty.style.display = 'block';
 }
 
 function apUpdateNet() {
-  const b = Number(document.getElementById('apBasic')?.value)      || 0;
-  const h = Number(document.getElementById('apHra')?.value)        || 0;
-  const a = Number(document.getElementById('apAllowances')?.value) || 0;
-  const d = Number(document.getElementById('apDeductions')?.value) || 0;
+  const b = Number(document.getElementById('apBasic')?.value)       || 0;
+  const h = Number(document.getElementById('apHra')?.value)         || 0;
+  const a = Number(document.getElementById('apAllowances')?.value)  || 0;
+  const d = Number(document.getElementById('apDeductions')?.value)  || 0;
   const el = document.getElementById('apComputedNet');
-  if (el) el.textContent = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(b + h + a - d);
+  if (el) el.textContent = fmtINR(b + h + a - d);
 }
-['apBasic','apHra','apAllowances','apDeductions'].forEach(id => {
+
+['apBasic', 'apHra', 'apAllowances', 'apDeductions'].forEach(id => {
   document.getElementById(id)?.addEventListener('input', apUpdateNet);
 });
 
@@ -485,38 +675,41 @@ window.loadAdminPayroll = async function () {
     _apTargetEmpId = empId;
     const p   = res.data;
     const cur = p.currency || 'INR';
-    const gross = (p.basic||0)+(p.hra||0)+(p.allowances||0);
 
-    document.getElementById('adminPayrollEmpLabel').textContent = `Employee: ${empId}`;
+    document.getElementById('adminPayrollEmpLabel').textContent =
+      `Employee: ${empId}`;
     document.getElementById('adminPayrollNetBadge').textContent =
-      new Intl.NumberFormat('en-IN', { style: 'currency', currency: cur, maximumFractionDigits: 0 }).format(p.netSalary || 0) + ' / mo';
+      fmtINR(p.netSalary || 0) + ' / mo';
 
     document.getElementById('adminPayrollBody').innerHTML = `
-      <tr><td>Basic Salary</td><td>${new Intl.NumberFormat('en-IN',{style:'currency',currency:cur,maximumFractionDigits:0}).format(p.basic||0)}</td></tr>
-      <tr><td>HRA</td><td>${new Intl.NumberFormat('en-IN',{style:'currency',currency:cur,maximumFractionDigits:0}).format(p.hra||0)}</td></tr>
-      <tr><td>Allowances</td><td>${new Intl.NumberFormat('en-IN',{style:'currency',currency:cur,maximumFractionDigits:0}).format(p.allowances||0)}</td></tr>
-      <tr><td>Deductions</td><td style="color:var(--red);">- ${new Intl.NumberFormat('en-IN',{style:'currency',currency:cur,maximumFractionDigits:0}).format(p.deductions||0)}</td></tr>
-      <tr style="font-weight:700;"><td>Net Salary</td><td style="color:var(--primary);">${new Intl.NumberFormat('en-IN',{style:'currency',currency:cur,maximumFractionDigits:0}).format(p.netSalary||0)}</td></tr>
-    `;
+      <tr><td>Basic Salary</td><td>${fmtINR(p.basic)}</td></tr>
+      <tr><td>HRA</td><td>${fmtINR(p.hra)}</td></tr>
+      <tr><td>Allowances</td><td>${fmtINR(p.allowances)}</td></tr>
+      <tr><td>Deductions</td><td style="color:var(--red);">- ${fmtINR(p.deductions)}</td></tr>
+      <tr style="font-weight:700;">
+        <td>Net Salary</td>
+        <td style="color:var(--primary);">${fmtINR(p.netSalary)}</td>
+      </tr>`;
 
-    document.getElementById('apBasic').value      = p.basic      || '';
-    document.getElementById('apHra').value        = p.hra        || '';
-    document.getElementById('apAllowances').value = p.allowances || '';
-    document.getElementById('apDeductions').value = p.deductions || '';
+    document.getElementById('apBasic').value       = p.basic       || '';
+    document.getElementById('apHra').value         = p.hra         || '';
+    document.getElementById('apAllowances').value  = p.allowances  || '';
+    document.getElementById('apDeductions').value  = p.deductions  || '';
     document.getElementById('apEffectiveFrom').value = p.effectiveFrom
-      ? new Date(p.effectiveFrom).toISOString().slice(0,10)
-      : new Date().toISOString().slice(0,10);
+      ? new Date(p.effectiveFrom).toISOString().slice(0, 10)
+      : new Date().toISOString().slice(0, 10);
     apUpdateNet();
 
     if (card)  card.style.display  = 'block';
     if (empty) empty.style.display = 'none';
   } catch (err) {
     if (err.status === 404) {
-      showToast(`No payroll for ${empId} yet — fill in the form to create it.`);
+      showToast(`No payroll for ${empId} yet — fill the form below to create one.`);
       _apTargetEmpId = empId;
       document.getElementById('adminPayrollEmpLabel').textContent = `New payroll for: ${empId}`;
       document.getElementById('adminPayrollNetBadge').textContent = '';
-      document.getElementById('adminPayrollBody').innerHTML = '<tr><td colspan="2" style="text-align:center;color:var(--muted);padding:16px;">No existing record</td></tr>';
+      document.getElementById('adminPayrollBody').innerHTML =
+        '<tr><td colspan="2" style="text-align:center;color:var(--muted);padding:16px;">No existing record</td></tr>';
       document.getElementById('apEffectiveFrom').value = new Date().toISOString().slice(0, 10);
       if (card)  card.style.display  = 'block';
       if (empty) empty.style.display = 'none';
@@ -533,8 +726,8 @@ document.getElementById('adminSavePayrollBtn')?.addEventListener('click', async 
   const allowances   = Number(document.getElementById('apAllowances')?.value)  || 0;
   const deductions   = Number(document.getElementById('apDeductions')?.value)  || 0;
   const effectiveFrom = document.getElementById('apEffectiveFrom')?.value;
-  if (basic <= 0)    { showToast('Basic salary must be > 0.'); return; }
-  if (!effectiveFrom){ showToast('Set an effective date.'); return; }
+  if (basic <= 0)     { showToast('Basic salary must be > 0.'); return; }
+  if (!effectiveFrom) { showToast('Set an effective date.'); return; }
 
   const btn = document.getElementById('adminSavePayrollBtn');
   btn.disabled = true; btn.textContent = 'Saving…';
@@ -544,10 +737,18 @@ document.getElementById('adminSavePayrollBtn')?.addEventListener('click', async 
       body: JSON.stringify({ basic, hra, allowances, deductions, effectiveFrom }),
     });
     showToast(`✅ Salary updated for ${_apTargetEmpId}.`);
-    loadAdminPayroll(); // reload
+    loadAdminPayroll();
   } catch (err) {
     showToast('Failed: ' + err.message);
   } finally {
     btn.disabled = false; btn.textContent = '💾 Save Salary Structure';
   }
 });
+
+// ─── Notification bell + initial load ────────────────────────────────────────
+
+initNotificationBell();
+initAdminBell();
+
+loadStats();
+loadOnboarding(); // default tab

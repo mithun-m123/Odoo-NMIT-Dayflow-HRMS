@@ -53,9 +53,10 @@ loginForm?.addEventListener('submit', async (e) => {
     window.location.href = 'index.html';
   } catch (err) {
     const msg =
+      err.code === 'PENDING_APPROVAL'     ? '⏳ Your account is awaiting admin approval. You will receive access once HR activates your account.' :
       err.code === 'INVALID_CREDENTIALS'  ? 'Incorrect email or password.'           :
       err.code === 'EMAIL_NOT_VERIFIED'   ? 'Please verify your email first.'        :
-      err.code === 'ACCOUNT_DISABLED'     ? 'Account disabled. Contact HR.'          :
+      err.code === 'ACCOUNT_DISABLED'     ? (err.message || 'Account disabled. Contact HR.') :
       err.message || 'Login failed. Please try again.';
     showError('loginError', msg);
     signInBtn.disabled    = false;
@@ -103,7 +104,7 @@ registerForm?.addEventListener('submit', async (e) => {
 
     const successEl = document.getElementById('registerSuccess');
     if (successEl) {
-      successEl.textContent = '✅ Account created! Check your email to verify, then sign in.';
+      successEl.textContent = '✅ Registration submitted! An admin will review and activate your account. You will be able to sign in once approved.';
       successEl.style.display = 'block';
     }
     registerForm.reset();

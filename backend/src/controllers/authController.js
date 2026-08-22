@@ -3,6 +3,7 @@ const User = require('../models/User');
 const LeaveBalance = require('../models/LeaveBalance');
 const AppError = require('../utils/AppError');
 const asyncHandler = require('../utils/asyncHandler');
+const notificationService = require('../services/notificationService');
 const {
   signAccessToken,
   signRefreshToken,
@@ -25,39 +26,58 @@ const register = asyncHandler(async (req, res) => {
   }
 
   const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
-  const { raw, hash } = generateOpaqueToken();
 
+  // New accounts sit in PENDING_APPROVAL — an admin must activate them before login is possible.
   const user = await User.create({
     employeeId,
     fullName,
     email: email.toLowerCase(),
     passwordHash,
     role: role === 'ADMIN' ? 'ADMIN' : 'EMPLOYEE',
-    status: 'PENDING_VERIFICATION',
-    emailVerificationTokenHash: hash,
-    emailVerificationExpires: new Date(Date.now() + 24 * 60 * 60 * 1000),
+    status: 'PENDING_APPROVAL',
   });
 
   await LeaveBalance.create({ employeeId: user.employeeId });
 
-  // In production this raw token is emailed to the user, never returned in the API response.
-  // Logged here only so the flow is testable without an email provider configured.
-  console.log(`[auth] Verification token for ${user.email}: ${raw}`);
+  // Notify every active admin about the new registration
+  const admins = await User.find({ role: 'ADMIN', status: 'ACTIVE' }).select('employeeId');
+  const roleLabel = user.role === 'ADMIN' ? 'HR / Admin' : 'Employee';
+
+  await Promise.all(
+    admins.map((admin) =>
+      notificationService.dispatch({
+        employeeId: admin.employeeId,
+        type: 'REGISTRATION_REQUEST',
+        targetRole: 'ADMIN',
+        title: 'New registration awaiting approval',
+        body: `${fullName} (${employeeId}) registered as ${roleLabel}. Review and approve or reject in the Admin Portal.`,
+        meta: {
+          newUserId:    user._id.toString(),
+          newEmployeeId: employeeId,
+          newFullName:   fullName,
+          newEmail:      email.toLowerCase(),
+          newRole:       user.role,
+        },
+      })
+    )
+  );
+
+  console.log(`[auth] New registration pending approval: ${user.email} (${user.employeeId})`);
 
   res.status(201).json({
     success: true,
     data: {
-      userId: user._id,
+      userId:     user._id,
       employeeId: user.employeeId,
-      email: user.email,
-      role: user.role,
-      status: user.status,
+      email:      user.email,
+      role:       user.role,
+      status:     user.status,
     },
-    message: 'Verification email sent',
+    message: 'Registration submitted. An admin will review and activate your account.',
   });
 });
 
-// POST /auth/verify-email
+// POST /auth/verify-email  (kept for legacy — not used in new flow)
 const verifyEmail = asyncHandler(async (req, res) => {
   const { token } = req.body;
   const tokenHash = hashToken(token);
@@ -67,9 +87,7 @@ const verifyEmail = asyncHandler(async (req, res) => {
     emailVerificationExpires: { $gt: new Date() },
   }).select('+emailVerificationTokenHash +emailVerificationExpires');
 
-  if (!user) {
-    throw new AppError(400, 'INVALID_TOKEN', 'Verification token is invalid or has expired');
-  }
+  if (!user) throw new AppError(400, 'INVALID_TOKEN', 'Verification token is invalid or has expired');
 
   user.status = 'ACTIVE';
   user.emailVerificationTokenHash = undefined;
@@ -85,22 +103,36 @@ const login = asyncHandler(async (req, res) => {
 
   const user = await User.findOne({ email: email.toLowerCase() }).select('+passwordHash');
 
-  // Same generic error for "no such user" and "wrong password" to avoid enumeration
-  const genericError = () => new AppError(401, 'INVALID_CREDENTIALS', 'Email or password is incorrect');
+  const genericError = () =>
+    new AppError(401, 'INVALID_CREDENTIALS', 'Email or password is incorrect');
 
   if (!user) throw genericError();
 
   const isMatch = await bcrypt.compare(password, user.passwordHash);
   if (!isMatch) throw genericError();
 
+  // ── Status gate ─────────────────────────────────────────────────────────────
+  if (user.status === 'PENDING_APPROVAL') {
+    throw new AppError(
+      403,
+      'PENDING_APPROVAL',
+      'Your account is awaiting admin approval. You will be able to log in once an admin activates your account.'
+    );
+  }
   if (user.status === 'PENDING_VERIFICATION') {
     throw new AppError(403, 'EMAIL_NOT_VERIFIED', 'Please verify your email before logging in');
   }
   if (user.status === 'DISABLED') {
-    throw new AppError(403, 'ACCOUNT_DISABLED', 'This account has been disabled');
+    throw new AppError(
+      403,
+      'ACCOUNT_DISABLED',
+      user.approvalNote
+        ? `Your account has been rejected: ${user.approvalNote}`
+        : 'Your account has been disabled. Contact HR.'
+    );
   }
 
-  const accessToken = signAccessToken(user);
+  const accessToken  = signAccessToken(user);
   const refreshToken = signRefreshToken(user);
 
   user.refreshTokenHash = hashToken(refreshToken);
@@ -113,10 +145,10 @@ const login = asyncHandler(async (req, res) => {
       refreshToken,
       expiresIn: accessTokenTtlSeconds(),
       user: {
-        userId: user._id,
+        userId:     user._id,
         employeeId: user.employeeId,
-        fullName: user.fullName,
-        role: user.role,
+        fullName:   user.fullName,
+        role:       user.role,
       },
     },
   });
@@ -128,11 +160,8 @@ const refresh = asyncHandler(async (req, res) => {
   if (!refreshToken) throw new AppError(400, 'VALIDATION_ERROR', 'refreshToken is required');
 
   let payload;
-  try {
-    payload = verifyRefreshToken(refreshToken);
-  } catch {
-    throw new AppError(401, 'INVALID_TOKEN', 'Invalid or expired refresh token');
-  }
+  try { payload = verifyRefreshToken(refreshToken); }
+  catch { throw new AppError(401, 'INVALID_TOKEN', 'Invalid or expired refresh token'); }
 
   const user = await User.findById(payload.sub).select('+refreshTokenHash');
   if (!user || user.refreshTokenHash !== hashToken(refreshToken)) {
@@ -140,10 +169,7 @@ const refresh = asyncHandler(async (req, res) => {
   }
 
   const accessToken = signAccessToken(user);
-  res.status(200).json({
-    success: true,
-    data: { accessToken, expiresIn: accessTokenTtlSeconds() },
-  });
+  res.status(200).json({ success: true, data: { accessToken, expiresIn: accessTokenTtlSeconds() } });
 });
 
 // POST /auth/logout
@@ -158,7 +184,6 @@ const forgotPassword = asyncHandler(async (req, res) => {
   const { email } = req.body;
   const user = await User.findOne({ email: email.toLowerCase() });
 
-  // Always respond 200 regardless of whether the account exists, to avoid enumeration
   if (user) {
     const { raw, hash } = generateOpaqueToken();
     user.passwordResetTokenHash = hash;
@@ -180,17 +205,17 @@ const resetPassword = asyncHandler(async (req, res) => {
     passwordResetExpires: { $gt: new Date() },
   }).select('+passwordResetTokenHash +passwordResetExpires');
 
-  if (!user) {
-    throw new AppError(400, 'INVALID_TOKEN', 'Reset token is invalid or has expired');
-  }
+  if (!user) throw new AppError(400, 'INVALID_TOKEN', 'Reset token is invalid or has expired');
 
   user.passwordHash = await bcrypt.hash(newPassword, SALT_ROUNDS);
   user.passwordResetTokenHash = undefined;
-  user.passwordResetExpires = undefined;
-  user.refreshTokenHash = undefined; // force re-login on all devices
+  user.passwordResetExpires   = undefined;
+  user.refreshTokenHash       = undefined;
   await user.save();
 
   res.status(200).json({ success: true, message: 'Password reset successfully' });
 });
 
-module.exports = { register, verifyEmail, login, refresh, logout, forgotPassword, resetPassword };
+module.exports = {
+  register, verifyEmail, login, refresh, logout, forgotPassword, resetPassword,
+};

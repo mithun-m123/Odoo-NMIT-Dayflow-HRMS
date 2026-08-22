@@ -6,8 +6,11 @@ const notificationSchema = new mongoose.Schema(
     type: {
       type: String,
       enum: [
-        'LEAVE_REQUEST',        // sent to admin when employee submits leave
-        'LEAVE_STATUS_CHANGED', // sent to employee when admin decides
+        'REGISTRATION_REQUEST',  // sent to admin when a new user registers
+        'REGISTRATION_APPROVED', // sent to employee when admin approves
+        'REGISTRATION_REJECTED', // sent to employee when admin rejects
+        'LEAVE_REQUEST',
+        'LEAVE_STATUS_CHANGED',
         'PAYROLL_UPDATED',
         'ATTENDANCE_UPDATED',
       ],

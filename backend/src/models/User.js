@@ -27,8 +27,8 @@ const userSchema = new mongoose.Schema(
     role: { type: String, enum: ['EMPLOYEE', 'ADMIN'], default: 'EMPLOYEE' },
     status: {
       type: String,
-      enum: ['PENDING_VERIFICATION', 'ACTIVE', 'DISABLED'],
-      default: 'PENDING_VERIFICATION',
+      enum: ['PENDING_APPROVAL', 'PENDING_VERIFICATION', 'ACTIVE', 'DISABLED'],
+      default: 'PENDING_APPROVAL',
     },
 
     phone: { type: String, default: '' },
@@ -48,6 +48,11 @@ const userSchema = new mongoose.Schema(
 
     // Refresh token rotation - store only a hash, never the raw token
     refreshTokenHash: { type: String, select: false },
+
+    // Admin onboarding approval
+    approvalNote: { type: String, default: '' },
+    approvedBy:   { type: String, default: null }, // admin employeeId
+    approvedAt:   { type: Date,   default: null },
   },
   { timestamps: true }
 );

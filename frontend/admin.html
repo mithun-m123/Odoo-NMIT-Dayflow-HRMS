@@ -263,9 +263,9 @@
         <div class="stat-lbl">PENDING REQUESTS</div>
       </div>
       <div class="admin-stat-card">
-        <div class="stat-icon">✅</div>
+        <div class="stat-icon">🆕</div>
         <div class="stat-num" id="statApproved">—</div>
-        <div class="stat-lbl">APPROVED TODAY</div>
+        <div class="stat-lbl">PENDING REGISTRATIONS</div>
       </div>
       <div class="admin-stat-card">
         <div class="stat-icon">👥</div>
@@ -281,15 +281,30 @@
 
     <!-- TABS -->
     <div class="admin-tabs">
-      <button class="admin-tab active" data-tab="pending">Pending Requests <span id="pendingBadge" style="background:var(--orange-light);color:var(--orange);padding:2px 8px;border-radius:10px;font-size:11px;margin-left:5px;font-weight:700;"></span></button>
+      <button class="admin-tab active" data-tab="onboarding">🆕 Onboarding <span id="onboardingBadge" style="background:var(--red-light);color:var(--red);padding:2px 8px;border-radius:10px;font-size:11px;margin-left:5px;font-weight:700;display:none;"></span></button>
+      <button class="admin-tab" data-tab="pending">Leave Requests <span id="pendingBadge" style="background:var(--orange-light);color:var(--orange);padding:2px 8px;border-radius:10px;font-size:11px;margin-left:5px;font-weight:700;"></span></button>
       <button class="admin-tab" data-tab="history">Leave History</button>
       <button class="admin-tab" data-tab="attendance">Attendance Records</button>
       <button class="admin-tab" data-tab="payroll">Payroll Management</button>
       <button class="admin-tab" data-tab="employees">Employees</button>
     </div>
 
-    <!-- TAB: PENDING -->
-    <div class="tab-panel active" id="tab-pending">
+    <!-- TAB: ONBOARDING — new employee registrations awaiting approval -->
+    <div class="tab-panel active" id="tab-onboarding">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
+        <div>
+          <h3>New Registration Requests</h3>
+          <p style="color:var(--muted);font-size:14px;margin-top:4px;">Review and approve or reject employee registrations before they can log in.</p>
+        </div>
+        <button class="primary-btn" onclick="loadOnboarding()" style="padding:9px 16px;font-size:13px;">↺ Refresh</button>
+      </div>
+      <div id="onboardingQueue">
+        <p class="state-msg">Loading pending registrations…</p>
+      </div>
+    </div>
+
+    <!-- TAB: PENDING LEAVE -->
+    <div class="tab-panel" id="tab-pending">
       <div class="filter-bar">
         <input type="text" id="pendingSearch" placeholder="Search by name or ID…" style="flex:1;max-width:280px;">
         <select id="pendingTypeFilter">
@@ -450,6 +465,38 @@
     </div>
 
   </main>
+</div>
+
+<!-- ONBOARDING APPROVE/REJECT MODAL -->
+<div id="onboardModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:900;align-items:center;justify-content:center;">
+  <div style="background:white;border-radius:20px;padding:32px;width:min(100%,520px);margin:20px;box-shadow:0 20px 60px rgba(0,0,0,.2);">
+    <h3 id="onboardModalTitle" style="font-size:20px;margin-bottom:6px;"></h3>
+    <p id="onboardModalSubtitle" style="color:var(--muted);font-size:14px;margin-bottom:20px;"></p>
+
+    <div id="onboardApproveExtra" style="display:none;">
+      <p style="font-size:13px;font-weight:700;color:var(--muted);margin-bottom:12px;letter-spacing:.5px;">OPTIONAL — SET JOB DETAILS</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+        <div class="input-group" style="margin-bottom:0;">
+          <label>Designation</label>
+          <input type="text" id="onboardDesig" placeholder="e.g. Software Engineer">
+        </div>
+        <div class="input-group" style="margin-bottom:0;">
+          <label>Department</label>
+          <input type="text" id="onboardDept" placeholder="e.g. Engineering">
+        </div>
+      </div>
+    </div>
+
+    <div class="input-group">
+      <label id="onboardNoteLabel">Note to employee (optional)</label>
+      <textarea id="onboardNote" rows="3" placeholder="Add a message for the employee…"></textarea>
+    </div>
+
+    <div style="display:flex;gap:12px;margin-top:8px;">
+      <button id="onboardConfirmBtn" class="primary-btn" style="flex:1;"></button>
+      <button onclick="closeOnboardModal()" style="flex:1;border:1px solid var(--border);background:white;padding:13px;border-radius:12px;cursor:pointer;font-weight:600;">Cancel</button>
+    </div>
+  </div>
 </div>
 
 <!-- APPROVE/REJECT MODAL -->

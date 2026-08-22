@@ -114,6 +114,20 @@ const api = {
     const qs = new URLSearchParams(params).toString();
     return apiFetch(`/employees${qs ? '?' + qs : ''}`);
   },
+  getPendingRegistrations: (params = {}) => {
+    const qs = new URLSearchParams(params).toString();
+    return apiFetch(`/employees/pending${qs ? '?' + qs : ''}`);
+  },
+  approveEmployee: (employeeId, note = '', jobDetails = null) =>
+    apiFetch(`/employees/${employeeId}/approve`, {
+      method: 'PATCH',
+      body: JSON.stringify({ note, ...(jobDetails ? { jobDetails } : {}) }),
+    }),
+  rejectEmployee: (employeeId, note = '') =>
+    apiFetch(`/employees/${employeeId}/reject`, {
+      method: 'PATCH',
+      body: JSON.stringify({ note }),
+    }),
 
   // Attendance
   checkIn:  (location = '') => apiFetch('/attendance/check-in',  { method: 'POST', body: JSON.stringify({ location }) }),
