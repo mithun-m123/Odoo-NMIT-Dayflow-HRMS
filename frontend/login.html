@@ -3,51 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dayflow Login</title>
+    <title>Dayflow | Sign In</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 
-<body class="login-page">
+<body>
 
-<div class="login-container">
+<div class="login-page">
 
-    <div class="login-brand">
-        <div class="brand-mark">D</div>
-        <h1>Dayflow</h1>
-        <p>Human Resource Management System</p>
-    </div>
+    <section class="login-brand">
+        <div class="brand">
+            <div class="brand-mark">D</div>
+            Dayflow
+        </div>
 
-    <div class="login-card">
-        <span class="section-kicker">WELCOME BACK</span>
-        <h2>Sign in to Dayflow</h2>
+        <div class="brand-copy">
+            <h1>Work feels better <span>in flow.</span></h1>
+            <p>
+                A modern employee experience that brings attendance,
+                leave, payroll and workflow into one intelligent space.
+            </p>
+        </div>
 
-        <form id="loginForm">
+        <div class="login-stats">
+            <div>
+                <strong>01</strong>
+                <span>One workspace</span>
+            </div>
+            <div>
+                <strong>24/7</strong>
+                <span>Employee access</span>
+            </div>
+        </div>
+    </section>
 
-            <label>Email Address</label>
-            <input type="email" id="email" placeholder="john@dayflow.com" required>
+    <section class="login-form-area">
+        <div class="login-card">
 
-            <label>Password</label>
-            <input type="password" id="password" placeholder="Enter password" required>
+            <span class="section-kicker">WELCOME BACK</span>
+            <h2>Sign in to Dayflow</h2>
+            <p>Start your workday with clarity.</p>
 
-            <button type="submit" class="primary-btn">
-                Enter Dayflow →
-            </button>
+            <form id="loginForm">
 
-        </form>
+                <div class="input-group">
+                    <label>Email Address</label>
+                    <input type="email" id="email" placeholder="employee@dayflow.com" required>
+                </div>
 
-        <p class="demo-text">
-            Demo: Enter any email and password
-        </p>
-    </div>
+                <div class="input-group">
+                    <label>Password</label>
+                    <input type="password" id="password" placeholder="Enter password" required>
+                </div>
+
+                <button class="primary-btn full-btn" type="submit">
+                    Enter Dayflow →
+                </button>
+
+            </form>
+
+            <div class="demo-box">
+                Demo: employee@dayflow.com / Password!123
+            </div>
+
+        </div>
+    </section>
 
 </div>
 
-<script>
-document.getElementById("loginForm").addEventListener("submit", function(e) {
-    e.preventDefault();
-    window.location.href = "index.html";
-});
-</script>
+<script src="js/login.js"></script>
 
 </body>
 </html>

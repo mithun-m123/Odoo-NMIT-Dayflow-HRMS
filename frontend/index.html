@@ -1,12 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Dayflow Dashboard</title>
-
+    <title>Dayflow | Dashboard</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 
@@ -18,60 +15,26 @@
 
         <div class="sidebar-logo">
             <div class="brand-mark small">D</div>
-
             <div>
                 <strong>Dayflow</strong>
                 <span>EMPLOYEE PORTAL</span>
             </div>
         </div>
 
-
         <div class="nav-section">
-
             <p class="nav-label">WORKSPACE</p>
 
-            <a href="index.html" class="nav-link active">
-                <span>⌂</span>
-                <span>My Dayflow</span>
-            </a>
-
-            <a href="attendance.html" class="nav-link">
-                <span>◷</span>
-                <span>Attendance</span>
-            </a>
-
-            <!-- Workflow does NOT go to login -->
-            <a href="#workflow.html" class="nav-link">
-                <span>◫</span>
-                <span>Workflow</span>
-            </a>
-
-            <button type="button" class="nav-link">
-                <a href="leave.html" class="nav-link">
-    <span>☷</span>
-    <span>Leave</span>
-</a>
-            </button>
-
-            <button type="button" class="nav-link">
-                <span>₹</span>
-                <span>Payroll</span>
-            </button>
-
+            <a href="index.html" class="nav-link active"><span>⌂</span><span>My Dayflow</span></a>
+            <a href="attendance.html" class="nav-link"><span>◷</span><span>Attendance</span></a>
+            <a href="workflow.html" class="nav-link"><span>◫</span><span>Workflow</span></a>
+            <a href="leave.html" class="nav-link"><span>☷</span><span>Leave</span></a>
+            <a href="payroll.html" class="nav-link"><span>₹</span><span>Payroll</span></a>
         </div>
-
 
         <div class="nav-section">
-
             <p class="nav-label">PERSONAL</p>
-
-            <a href="profile.html" class="nav-link">
-                <span>◉</span>
-                <span>My Profile</span>
-            </a>
-
+            <a href="profile.html" class="nav-link"><span>◉</span><span>My Profile</span></a>
         </div>
-
 
         <div class="sidebar-bottom">
             <strong>Need help?</strong>
@@ -80,178 +43,125 @@
 
     </aside>
 
-
     <main class="dashboard-main">
 
         <header class="topbar">
-
             <div>
-                <span class="section-kicker">GOOD MORNING</span>
-                <h1>Your day, in <span>flow.</span></h1>
-                <p>Everything you need for a productive workday.</p>
+                <span class="section-kicker">EMPLOYEE COMMAND CENTER</span>
+                <h1>Good morning, <span>John.</span></h1>
+                <p>Everything you need for a smooth workday, in one flow.</p>
             </div>
 
             <div class="user-menu">
                 <div class="user-avatar">JD</div>
-
                 <div>
                     <strong>John Doe</strong>
                     <span>Software Engineer</span>
                 </div>
             </div>
-
         </header>
 
-
-        <section class="hero-card">
-
+        <section class="hero-dashboard">
             <div>
-                <span class="section-kicker">TODAY'S FLOW</span>
-
-                <h2>Ready to make today count?</h2>
-
+                <span class="section-kicker" style="color:#bdb6ff;">TODAY'S FLOW</span>
+                <h2>You are building momentum.</h2>
                 <p>
-                    Track your work, attendance and employee information
-                    from one simple dashboard.
+                    You have checked into your workspace. Keep your workflow
+                    moving and track your day from one place.
                 </p>
-
-                <div class="hero-actions">
-
-                    <a href="attendance.html" class="primary-btn">
-                        View Attendance →
-                    </a>
-
-                    <a href="profile.html" class="secondary-btn">
-                        My Profile
-                    </a>
-
-                </div>
-
             </div>
 
-            <div class="hero-status">
-                <div class="status-circle">✓</div>
-                <strong>IN FLOW</strong>
-                <span>Working Today</span>
+            <div class="dayflow-score">
+                <strong>86</strong>
+                <span>DAYFLOW SCORE</span>
+            </div>
+        </section>
+
+        <section class="pulse-grid">
+
+            <div class="pulse-card">
+                <div class="pulse-icon">◷</div>
+                <strong id="attendanceStatus">Not checked in</strong>
+                <span>Today's attendance</span>
+            </div>
+
+            <div class="pulse-card">
+                <div class="pulse-icon">☷</div>
+                <strong>22 Days</strong>
+                <span>Leave balance available</span>
+            </div>
+
+            <div class="pulse-card">
+                <div class="pulse-icon">₹</div>
+                <strong>₹72,500</strong>
+                <span>Latest net salary</span>
             </div>
 
         </section>
 
+        <span class="section-kicker">QUICK ACTIONS</span>
+        <h2 style="margin:8px 0 18px;">Keep your day moving</h2>
 
-        <section class="stats-grid">
+        <section class="quick-grid">
 
-            <div class="stat-card">
-                <span>WORK TIME</span>
-                <h2>04h 38m</h2>
-                <p>● Currently working</p>
-            </div>
+            <a href="attendance.html" class="quick-card">
+                <div>◷</div>
+                <strong>Attendance</strong>
+                <span>Check in and track work time →</span>
+            </a>
 
-            <div class="stat-card">
-                <span>LEAVE BALANCE</span>
-                <h2>12 Days</h2>
-                <p>Available this year</p>
-            </div>
+            <a href="leave.html" class="quick-card">
+                <div>☷</div>
+                <strong>Apply Leave</strong>
+                <span>Request time off →</span>
+            </a>
 
-            <div class="stat-card">
-                <span>ATTENDANCE</span>
-                <h2>88%</h2>
-                <p>This month's attendance</p>
-            </div>
-
-            <div class="stat-card">
-                <span>NEXT PAYDAY</span>
-                <h2>6 Days</h2>
-                <p>Salary cycle in progress</p>
-            </div>
+            <a href="payroll.html" class="quick-card">
+                <div>₹</div>
+                <strong>Payroll</strong>
+                <span>View salary and payslips →</span>
+            </a>
 
         </section>
 
+        <section class="dashboard-layout">
 
-        <section class="content-card" id="workflow">
+            <div class="content-card">
+                <span class="section-kicker">ACTIVITY</span>
+                <h2 style="margin:8px 0 12px;">Your flow today</h2>
 
-            <div class="card-heading">
-                <div>
-                    <span class="section-kicker">YOUR WORKFLOW</span>
-                    <h2>Today's rhythm</h2>
+                <div class="activity-row">
+                    <div class="activity-dot"></div>
+                    <div>
+                        <strong>Dayflow workspace ready</strong>
+                        <span>Start by checking your attendance.</span>
+                    </div>
+                </div>
+
+                <div class="activity-row">
+                    <div class="activity-dot"></div>
+                    <div>
+                        <strong>Leave balance updated</strong>
+                        <span>22 days available across leave categories.</span>
+                    </div>
+                </div>
+
+                <div class="activity-row">
+                    <div class="activity-dot"></div>
+                    <div>
+                        <strong>August payroll processed</strong>
+                        <span>Your latest payslip is available.</span>
+                    </div>
                 </div>
             </div>
 
-
-            <div class="workflow-list">
-
-                <div class="workflow-item">
-                    <div class="workflow-icon completed">✓</div>
-
-                    <div>
-                        <strong>Check In</strong>
-                        <span>Completed at 09:12 AM</span>
-                    </div>
-
-                    <b>DONE</b>
-                </div>
-
-
-                <div class="workflow-item">
-                    <div class="workflow-icon working">●</div>
-
-                    <div>
-                        <strong>Focus Time</strong>
-                        <span>Currently working</span>
-                    </div>
-
-                    <b>NOW</b>
-                </div>
-
-
-                <div class="workflow-item">
-                    <div class="workflow-icon">○</div>
-
-                    <div>
-                        <strong>Check Out</strong>
-                        <span>Expected by 06:00 PM</span>
-                    </div>
-
-                    <b>LATER</b>
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <section class="quick-section">
-
-            <span class="section-kicker">QUICK ACTIONS</span>
-            <h2>Get things done</h2>
-
-            <div class="quick-grid">
-
-                <a href="attendance.html" class="quick-card">
-                    <div>◷</div>
-                    <strong>Attendance</strong>
-                    <span>Track your workday</span>
-                </a>
-
-                <a href="profile.html" class="quick-card">
-                    <div>◉</div>
-                    <strong>My Profile</strong>
-                    <span>View your details</span>
-                </a>
-
-                <div class="quick-card">
-                    <a href="leave.html" class="quick-card">
-                        <div>☷</div>
-                        <strong>Apply Leave</strong>
-                        <span>Request time off →</span>
-                    </a>
-                </div>
-
-                <div class="quick-card">
-                    <div>₹</div>
-                    <strong>Payroll</strong>
-                    <span>Coming soon</span>
-                </div>
-
+            <div class="content-card">
+                <span class="section-kicker">SMART INSIGHT</span>
+                <h2 style="margin:8px 0 12px;">Plan ahead.</h2>
+                <p style="color:var(--muted);font-size:13px;line-height:1.6;">
+                    Your highest leave availability is in annual leave.
+                    Plan requests early to help your team stay in flow.
+                </p>
             </div>
 
         </section>

@@ -5,7 +5,6 @@ const leaveForm = document.getElementById("leaveForm");
 const leaveHistory = document.getElementById("leaveHistory");
 
 function calculateDays() {
-
     if (!startDate.value || !endDate.value) {
         totalDays.textContent = "Select dates";
         return;
@@ -14,76 +13,51 @@ function calculateDays() {
     const start = new Date(startDate.value);
     const end = new Date(endDate.value);
 
-    const difference = end - start;
-
-    const days = Math.floor(
-        difference / (1000 * 60 * 60 * 24)
-    ) + 1;
-
-    if (days <= 0) {
+    if (end < start) {
         totalDays.textContent = "Invalid dates";
         return;
     }
 
-    totalDays.textContent = days + " Day" + (days > 1 ? "s" : "");
+    const difference = Math.floor((end - start) / 86400000) + 1;
+
+    totalDays.textContent =
+        difference + " Day" + (difference > 1 ? "s" : "");
 }
 
 startDate.addEventListener("change", calculateDays);
 endDate.addEventListener("change", calculateDays);
 
-
 leaveForm.addEventListener("submit", function (event) {
-
     event.preventDefault();
 
     const type = document.getElementById("leaveType").value;
-    const start = startDate.value;
-    const end = endDate.value;
 
-    if (!type || !start || !end) {
-        alert("Please complete all fields.");
+    if (totalDays.textContent === "Invalid dates") {
+        alert("Please select valid dates.");
         return;
     }
 
-    if (new Date(end) < new Date(start)) {
-        alert("End date cannot be before start date.");
-        return;
-    }
+    const row = document.createElement("div");
 
-    const requestedDays = totalDays.textContent;
+    row.className = "history-row";
 
-    const newRequest = document.createElement("div");
-
-    newRequest.className = "leave-history-row";
-
-    newRequest.innerHTML = `
-        <div class="leave-type-icon personal-icon">
-            ☷
-        </div>
-
-        <div class="leave-history-info">
-
+    row.innerHTML = `
+        <div>
             <strong>${type}</strong>
-
-            <span>${start} – ${end}</span>
-
+            <p style="font-size:11px;color:var(--muted);margin-top:4px;">
+                ${startDate.value} – ${endDate.value}
+            </p>
         </div>
 
-        <div class="leave-days">
-            ${requestedDays}
-        </div>
+        <strong>${totalDays.textContent}</strong>
 
-        <span class="status pending">
-            Pending
-        </span>
+        <span class="status pending">Pending</span>
     `;
 
-    leaveHistory.prepend(newRequest);
-
-    alert("Leave request submitted successfully!");
+    leaveHistory.prepend(row);
 
     leaveForm.reset();
-
     totalDays.textContent = "Select dates";
 
+    alert("Leave request submitted successfully!");
 });
