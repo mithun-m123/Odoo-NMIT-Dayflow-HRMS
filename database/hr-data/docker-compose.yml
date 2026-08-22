@@ -1,0 +1,36 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:16
+    container_name: dayflow-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: example
+      POSTGRES_DB: dayflow_hrms
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./data:/var/lib/postgresql/data
+
+  migrate:
+    image: postgres:16
+    depends_on:
+      - db
+    volumes:
+      - ./:/work:ro
+    entrypoint: ["bash", "-c"]
+    command: |
+      echo "Waiting for database to become available...";
+      until pg_isready -h db -p 5432 -U "$${POSTGRES_USER:-postgres}"; do sleep 1; done;
+      echo "Applying migrations...";
+      for f in /work/migrations/*.sql; do
+        echo "-> $f";
+        psql -h db -U "$${POSTGRES_USER:-postgres}" -d "$${POSTGRES_DB:-dayflow_hrms}" -f "$f" || exit 1;
+      done;
+      if [ -f /work/seed/seed_data.sql ]; then
+        echo "Applying seed/seed_data.sql...";
+        psql -h db -U "$${POSTGRES_USER:-postgres}" -d "$${POSTGRES_DB:-dayflow_hrms}" -f /work/seed/seed_data.sql || exit 1;
+      else
+        echo "No seed file found; skipping.";
+      fi;
+      echo "Migrations complete.";
