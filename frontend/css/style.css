@@ -770,3 +770,283 @@ button {
     }
 
 }
+
+
+/* ================= LEAVE MANAGEMENT ================= */
+
+.leave-balance-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    margin-bottom: 25px;
+}
+
+.leave-balance-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 22px;
+}
+
+.balance-icon {
+    font-size: 24px;
+    margin-bottom: 18px;
+}
+
+.leave-balance-card > span {
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 1px;
+}
+
+.leave-balance-card h2 {
+    font-size: 32px;
+    margin: 8px 0 5px;
+}
+
+.leave-balance-card h2 small {
+    font-size: 13px;
+    color: var(--muted);
+}
+
+.leave-balance-card p {
+    color: var(--muted);
+    font-size: 11px;
+}
+
+.balance-bar {
+    height: 6px;
+    background: #eeeeF5;
+    border-radius: 10px;
+    margin-top: 18px;
+    overflow: hidden;
+}
+
+.balance-progress {
+    height: 100%;
+    border-radius: 10px;
+}
+
+.annual-progress {
+    width: 70%;
+    background: var(--primary);
+}
+
+.sick-progress {
+    width: 50%;
+    background: var(--green);
+}
+
+.personal-progress {
+    width: 40%;
+    background: #f59e0b;
+}
+
+.leave-layout {
+    display: grid;
+    grid-template-columns: 1.4fr 0.6fr;
+    gap: 20px;
+    margin-bottom: 25px;
+}
+
+.leave-form-card label {
+    display: block;
+    font-size: 12px;
+    margin: 18px 0 7px;
+}
+
+.leave-form-card select,
+.leave-form-card input,
+.leave-form-card textarea {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px;
+    font-family: inherit;
+}
+
+.date-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.leave-days-preview {
+    background: #f4f2ff;
+    border-radius: 12px;
+    padding: 14px;
+    margin-top: 18px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.leave-days-preview span {
+    font-size: 10px;
+    color: var(--muted);
+}
+
+.leave-days-preview strong {
+    color: var(--primary);
+}
+
+.leave-submit {
+    width: 100%;
+}
+
+.leave-insight-card {
+    background: linear-gradient(135deg, #211758, #6956e8);
+    color: white;
+    padding: 28px;
+    border-radius: 20px;
+}
+
+.leave-insight-card h2 {
+    margin: 10px 0;
+}
+
+.leave-insight-card p {
+    color: #c7c3df;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.leave-insight-circle {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    border: 10px solid #9d91ff;
+    margin: 30px auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.leave-insight-circle strong {
+    font-size: 36px;
+}
+
+.leave-insight-circle span {
+    font-size: 9px;
+    color: #c7c3df;
+}
+
+.insight-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 13px 0;
+    border-top: 1px solid rgba(255,255,255,.15);
+    font-size: 12px;
+}
+
+.insight-item span {
+    color: #c7c3df;
+}
+
+.leave-history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.history-count {
+    background: #f1efff;
+    color: var(--primary);
+    padding: 7px 10px;
+    border-radius: 8px;
+    font-size: 9px;
+    font-weight: bold;
+}
+
+.leave-history-row {
+    display: grid;
+    grid-template-columns: 50px 1fr 100px 100px;
+    align-items: center;
+    gap: 15px;
+    padding: 18px 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.leave-history-row:last-child {
+    border-bottom: none;
+}
+
+.leave-type-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    display: grid;
+    place-items: center;
+}
+
+.annual-icon {
+    background: #eeeaff;
+    color: var(--primary);
+}
+
+.sick-icon {
+    background: #e1f7ec;
+    color: var(--green);
+}
+
+.personal-icon {
+    background: #fff4db;
+    color: #f59e0b;
+}
+
+.leave-history-info strong,
+.leave-history-info span {
+    display: block;
+}
+
+.leave-history-info span {
+    color: var(--muted);
+    font-size: 11px;
+    margin-top: 5px;
+}
+
+.leave-days {
+    font-size: 12px;
+    color: var(--muted);
+}
+
+.status {
+    padding: 6px 10px;
+    border-radius: 7px;
+    font-size: 10px;
+    width: fit-content;
+}
+
+.status.approved {
+    background: #e1f7ec;
+    color: var(--green);
+}
+
+.status.pending {
+    background: #fff4db;
+    color: #d98b00;
+}
+
+@media (max-width: 900px) {
+
+    .leave-balance-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .leave-layout {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+@media (max-width: 600px) {
+
+    .date-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .leave-history-row {
+        grid-template-columns: 45px 1fr;
+    }
+
+}
