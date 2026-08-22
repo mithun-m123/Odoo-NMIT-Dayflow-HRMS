@@ -1,179 +1,165 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dayflow | Leave</title>
-    <link rel="stylesheet" href="css/style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dayflow | Leave</title>
+<link rel="stylesheet" href="css/style.css">
 </head>
-
 <body>
 
 <div class="app-shell">
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="brand-mark small">D</div>
+      <div><strong>Dayflow</strong><span>EMPLOYEE PORTAL</span></div>
+    </div>
+    <div class="nav-section">
+      <p class="nav-label">Workspace</p>
+      <a href="index.html"      class="nav-link"><span>⌂</span><span>My Dayflow</span></a>
+      <a href="attendance.html" class="nav-link"><span>◷</span><span>Attendance</span></a>
+      <a href="leave.html"      class="nav-link active"><span>☷</span><span>Leave</span></a>
+      <a href="payroll.html"    class="nav-link"><span>₹</span><span>Payroll</span></a>
+      <a href="workflow.html"   class="nav-link"><span>◫</span><span>Workflow</span></a>
+    </div>
+    <div class="nav-section">
+      <p class="nav-label">Personal</p>
+      <a href="profile.html" class="nav-link"><span>◉</span><span>My Profile</span></a>
+    </div>
+    <div class="sidebar-signout"><button id="logoutBtn">↩ Sign out</button></div>
+  </aside>
 
-    <aside class="sidebar">
-        <div class="sidebar-logo">
-            <div class="brand-mark small">D</div>
-            <div><strong>Dayflow</strong><span>EMPLOYEE PORTAL</span></div>
+  <main class="dashboard-main">
+
+    <header class="topbar">
+      <div>
+        <span class="section-kicker">Time-Off Management</span>
+        <h1>Take time. <span>Stay in flow.</span></h1>
+        <p>Plan, request and track your time away from work.</p>
+      </div>
+      <div class="topbar-right">
+        <div class="bell-wrap">
+          <button class="bell-btn" id="notifBell" title="Notifications">🔔<span class="notif-badge" id="notifBadge"></span></button>
+          <div class="notif-dropdown" id="notifDropdown">
+            <div class="notif-header"><strong>Notifications</strong><button class="notif-mark-all" id="markAllReadBtn">Mark all read</button></div>
+            <div class="notif-list"></div>
+          </div>
         </div>
+      </div>
+    </header>
 
-        <div class="nav-section">
-            <p class="nav-label">WORKSPACE</p>
-            <a href="index.html" class="nav-link"><span>⌂</span><span>My Dayflow</span></a>
-            <a href="attendance.html" class="nav-link"><span>◷</span><span>Attendance</span></a>
-            <a href="workflow.html" class="nav-link"><span>◫</span><span>Workflow</span></a>
-            <a href="leave.html" class="nav-link active"><span>☷</span><span>Leave</span></a>
-            <a href="payroll.html" class="nav-link"><span>₹</span><span>Payroll</span></a>
+    <!-- BALANCE CARDS -->
+    <section class="leave-balance-grid">
+      <div class="leave-balance-card">
+        <span>ANNUAL LEAVE (Paid)</span>
+        <h2 id="annualBalance">— Days</h2>
+        <p style="font-size:13px;color:var(--muted);margin-top:4px;">Available balance</p>
+      </div>
+      <div class="leave-balance-card">
+        <span>SICK LEAVE</span>
+        <h2 id="sickBalance">— Days</h2>
+        <p style="font-size:13px;color:var(--muted);margin-top:4px;">Available balance</p>
+      </div>
+      <div class="leave-balance-card">
+        <span>PERSONAL (Unpaid)</span>
+        <h2 id="personalBalance">Unlimited</h2>
+        <p style="font-size:13px;color:var(--muted);margin-top:4px;">No cap applied</p>
+      </div>
+    </section>
+
+    <!-- FORM + INSIGHT -->
+    <section class="leave-layout">
+
+      <div class="content-card">
+        <span class="section-kicker">New Request</span>
+        <h3 style="margin:10px 0 20px;">Apply for leave</h3>
+
+        <form id="leaveForm">
+          <div class="input-group">
+            <label>Leave Type</label>
+            <select id="leaveType" required>
+              <option value="">— Select leave type —</option>
+              <option value="Annual Leave">Annual Leave (Paid)</option>
+              <option value="Sick Leave">Sick Leave</option>
+              <option value="Personal Leave">Personal Leave (Unpaid)</option>
+            </select>
+          </div>
+
+          <div class="date-grid">
+            <div class="input-group">
+              <label>Start Date</label>
+              <input type="date" id="startDate" required>
+            </div>
+            <div class="input-group">
+              <label>End Date</label>
+              <input type="date" id="endDate" required>
+            </div>
+          </div>
+
+          <div class="leave-preview">
+            <span style="font-size:14px;font-weight:600;">Requested Time</span>
+            <strong id="totalDays">Select dates</strong>
+          </div>
+
+          <div class="input-group">
+            <label>Reason / Remarks</label>
+            <textarea id="reason" rows="3" placeholder="Brief reason for your leave…" required></textarea>
+          </div>
+
+          <button class="primary-btn full-btn" type="submit" id="leaveSubmitBtn">
+            Submit Leave Request →
+          </button>
+        </form>
+      </div>
+
+      <div class="insight-card">
+        <span class="section-kicker" style="color:#c7c1ff;">Leave Insight</span>
+        <h3 style="margin:12px 0 8px;color:white;">Your time matters.</h3>
+        <p>Plan your leave early to keep your team informed and ensure smooth coverage.</p>
+        <div class="insight-number" id="totalBalance">—</div>
+        <span style="color:#d4d0ef;font-size:12px;font-weight:600;letter-spacing:1px;">TOTAL DAYS AVAILABLE</span>
+
+        <div style="margin-top:28px;border-top:1px solid rgba(255,255,255,.15);padding-top:20px;">
+          <p style="color:#c7c1ff;font-size:13px;font-weight:600;margin-bottom:10px;">STATUS TYPES</p>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <div style="display:flex;justify-content:space-between;font-size:13px;color:#d4d0ef;">
+              <span>⏳ Pending</span><span>Awaiting admin review</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:13px;color:#d4d0ef;">
+              <span>✅ Approved</span><span>Confirmed & recorded</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:13px;color:#d4d0ef;">
+              <span>❌ Rejected</span><span>Request declined</span>
+            </div>
+          </div>
         </div>
+      </div>
+    </section>
 
-        <div class="nav-section">
-            <p class="nav-label">PERSONAL</p>
-            <a href="profile.html" class="nav-link"><span>◉</span><span>My Profile</span></a>
+    <!-- HISTORY -->
+    <section class="content-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
+        <div>
+          <span class="section-kicker">Request History</span>
+          <h3 style="margin-top:8px;">Your leave journey</h3>
         </div>
+        <select id="historyFilter" style="padding:9px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:14px;outline:none;background:white;">
+          <option value="">All statuses</option>
+          <option value="PENDING">Pending</option>
+          <option value="APPROVED">Approved</option>
+          <option value="REJECTED">Rejected</option>
+        </select>
+      </div>
+      <div id="leaveHistory">
+        <p style="text-align:center;color:var(--muted);padding:32px;">Loading your leave history…</p>
+      </div>
+    </section>
 
-        <div style="padding:20px 16px 10px;">
-            <button id="logoutBtn" style="width:100%;background:#29294a;color:#b7b7c8;border:none;padding:10px;border-radius:10px;cursor:pointer;font-size:12px;">Sign out</button>
-        </div>
-    </aside>
-
-    <main class="dashboard-main">
-
-        <header class="topbar">
-            <div>
-                <span class="section-kicker">TIME OFF MANAGEMENT</span>
-                <h1>Take time. <span>Stay in flow.</span></h1>
-                <p>Plan, request and track your time away from work.</p>
-            </div>
-            <div style="display:flex;align-items:center;gap:12px;">
-              <div class="bell-wrap">
-                <button class="bell-btn" id="notifBell" title="Notifications">🔔<span class="notif-badge" id="notifBadge"></span></button>
-                <div class="notif-dropdown" id="notifDropdown">
-                  <div class="notif-header"><strong>Notifications</strong><button class="notif-mark-all" id="markAllReadBtn">Mark all read</button></div>
-                  <div class="notif-list"></div>
-                </div>
-              </div>
-            </div>
-        </header>
-
-        <section class="leave-balance-grid">
-
-            <div class="leave-balance-card">
-                <span>ANNUAL LEAVE</span>
-                <h2 id="annualBalance">— Days</h2>
-                <p style="color:var(--muted);font-size:11px;">Available balance</p>
-            </div>
-
-            <div class="leave-balance-card">
-                <span>SICK LEAVE</span>
-                <h2 id="sickBalance">— Days</h2>
-                <p style="color:var(--muted);font-size:11px;">Available balance</p>
-            </div>
-
-            <div class="leave-balance-card">
-                <span>PERSONAL LEAVE</span>
-                <h2 id="personalBalance">Unlimited</h2>
-                <p style="color:var(--muted);font-size:11px;">Available balance</p>
-            </div>
-
-        </section>
-
-        <section class="leave-layout">
-
-            <div class="content-card">
-
-                <span class="section-kicker">NEW REQUEST</span>
-                <h2 style="margin:8px 0 18px;">Request time off</h2>
-
-                <form id="leaveForm">
-
-                    <div class="input-group">
-                        <label>Leave Type</label>
-                        <select id="leaveType" required>
-                            <option value="">Select leave type</option>
-                            <option>Annual Leave</option>
-                            <option>Sick Leave</option>
-                            <option>Personal Leave</option>
-                        </select>
-                    </div>
-
-                    <div class="date-grid">
-
-                        <div class="input-group">
-                            <label>Start Date</label>
-                            <input type="date" id="startDate" required>
-                        </div>
-
-                        <div class="input-group">
-                            <label>End Date</label>
-                            <input type="date" id="endDate" required>
-                        </div>
-
-                    </div>
-
-                    <div class="leave-preview">
-                        <span>REQUESTED TIME</span>
-                        <strong id="totalDays">Select dates</strong>
-                    </div>
-
-                    <div class="input-group">
-                        <label>Reason</label>
-                        <textarea id="reason" rows="4" placeholder="Why do you need time off?" required></textarea>
-                    </div>
-
-                    <button class="primary-btn full-btn" type="submit">
-                        Submit Leave Request →
-                    </button>
-
-                </form>
-
-            </div>
-
-            <div class="insight-card">
-                <span class="section-kicker" style="color:#c7c1ff;">DAYFLOW INSIGHT</span>
-                <h2 style="margin-top:10px;">Your time matters.</h2>
-                <p>You have a healthy leave balance available. Plan ahead to keep your team informed.</p>
-
-                <div class="insight-number" id="totalBalance">—</div>
-                <span style="color:#d4d0ef;font-size:11px;">TOTAL DAYS AVAILABLE</span>
-            </div>
-
-        </section>
-
-        <section class="content-card">
-
-            <span class="section-kicker">REQUEST HISTORY</span>
-            <h2 style="margin:8px 0 15px;">Your leave journey</h2>
-
-            <div id="leaveHistory">
-
-                <div class="history-row">
-                    <div>
-                        <strong>Annual Leave</strong>
-                        <p style="font-size:11px;color:var(--muted);margin-top:4px;">12 Aug 2026 – 14 Aug 2026</p>
-                    </div>
-                    <strong>3 Days</strong>
-                    <span class="status approved">Approved</span>
-                </div>
-
-                <div class="history-row">
-                    <div>
-                        <strong>Personal Leave</strong>
-                        <p style="font-size:11px;color:var(--muted);margin-top:4px;">20 Aug 2026 – 21 Aug 2026</p>
-                    </div>
-                    <strong>2 Days</strong>
-                    <span class="status pending">Pending</span>
-                </div>
-
-            </div>
-
-        </section>
-
-    </main>
-
+  </main>
 </div>
 
+<div class="toast" id="toast"></div>
 <script src="js/api.js"></script>
 <script src="js/leave.js"></script>
-
 </body>
 </html>

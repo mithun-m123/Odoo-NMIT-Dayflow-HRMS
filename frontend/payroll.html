@@ -1,152 +1,207 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dayflow | Payroll</title>
-    <link rel="stylesheet" href="css/style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dayflow | Payroll</title>
+<link rel="stylesheet" href="css/style.css">
 </head>
-
 <body>
 
 <div class="app-shell">
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="brand-mark small">D</div>
+      <div><strong>Dayflow</strong><span>EMPLOYEE PORTAL</span></div>
+    </div>
+    <div class="nav-section">
+      <p class="nav-label">Workspace</p>
+      <a href="index.html"      class="nav-link"><span>⌂</span><span>My Dayflow</span></a>
+      <a href="attendance.html" class="nav-link"><span>◷</span><span>Attendance</span></a>
+      <a href="leave.html"      class="nav-link"><span>☷</span><span>Leave</span></a>
+      <a href="payroll.html"    class="nav-link active"><span>₹</span><span>Payroll</span></a>
+      <a href="workflow.html"   class="nav-link"><span>◫</span><span>Workflow</span></a>
+    </div>
+    <div class="nav-section">
+      <p class="nav-label">Personal</p>
+      <a href="profile.html" class="nav-link"><span>◉</span><span>My Profile</span></a>
+      <a href="admin.html"   class="nav-link nav-link-admin" id="adminLink" style="display:none;"><span>⚙</span><span>Admin Portal</span></a>
+    </div>
+    <div class="sidebar-signout"><button id="logoutBtn">↩ Sign out</button></div>
+  </aside>
 
-    <aside class="sidebar">
-        <div class="sidebar-logo">
-            <div class="brand-mark small">D</div>
-            <div><strong>Dayflow</strong><span>EMPLOYEE PORTAL</span></div>
+  <main class="dashboard-main">
+
+    <header class="topbar">
+      <div>
+        <span class="section-kicker">Payroll Center</span>
+        <h1>Your salary, <span>made clear.</span></h1>
+        <p>Read-only view of your salary structure, deductions and payslip.</p>
+      </div>
+      <div class="topbar-right">
+        <div class="bell-wrap">
+          <button class="bell-btn" id="notifBell" title="Notifications">🔔<span class="notif-badge" id="notifBadge"></span></button>
+          <div class="notif-dropdown" id="notifDropdown">
+            <div class="notif-header"><strong>Notifications</strong><button class="notif-mark-all" id="markAllReadBtn">Mark all read</button></div>
+            <div class="notif-list"></div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Loading / Error -->
+    <p id="payrollLoading" style="color:var(--muted);font-size:14px;margin-bottom:16px;">Loading payroll data…</p>
+    <p id="payrollError"   style="color:var(--red);font-size:14px;margin-bottom:16px;background:var(--red-light);padding:14px;border-radius:var(--radius-sm);display:none;"></p>
+
+    <!-- HERO -->
+    <section class="salary-hero">
+      <div>
+        <span class="section-kicker" style="color:#c6c0ff;" id="netPayHeading">— • NET PAY</span>
+        <h2 id="netPayHero">—</h2>
+        <p>Your salary has been processed. Payroll data is read-only.</p>
+        <button class="primary-btn" id="downloadPayslip" style="margin-top:20px;">
+          ↓ Download Payslip
+        </button>
+      </div>
+      <div class="salary-circle">
+        <strong id="payrollStatus">—</strong>
+      </div>
+    </section>
+
+    <!-- SUMMARY CARDS -->
+    <section class="payroll-summary-grid">
+      <div class="payroll-summary-card">
+        <span>GROSS EARNINGS</span>
+        <h3 id="grossEarnings">—</h3>
+        <p style="font-size:13px;color:var(--muted);margin-top:4px;">Basic + HRA + Allowances</p>
+      </div>
+      <div class="payroll-summary-card">
+        <span>DEDUCTIONS</span>
+        <h3 id="deductionsTotal">—</h3>
+        <p style="font-size:13px;color:var(--muted);margin-top:4px;">Tax & contributions</p>
+      </div>
+      <div class="payroll-summary-card">
+        <span>NET PAY</span>
+        <h3 id="netPaySummary">—</h3>
+        <p style="font-size:13px;color:var(--muted);margin-top:4px;">Amount credited</p>
+      </div>
+    </section>
+
+    <!-- BREAKDOWN + INSIGHT -->
+    <section class="payroll-layout">
+
+      <div class="content-card">
+        <span class="section-kicker">Salary Breakdown</span>
+        <h3 style="margin:10px 0 20px;">Where your salary goes</h3>
+
+        <div class="salary-row">
+          <div>
+            <strong>Basic Salary</strong>
+            <p style="font-size:13px;color:var(--muted);margin-top:3px;">Base compensation</p>
+          </div>
+          <strong id="basicRow">—</strong>
+        </div>
+        <div class="salary-row">
+          <div>
+            <strong>House Rent Allowance</strong>
+            <p style="font-size:13px;color:var(--muted);margin-top:3px;">Monthly HRA</p>
+          </div>
+          <strong id="hraRow">—</strong>
+        </div>
+        <div class="salary-row">
+          <div>
+            <strong>Special Allowances</strong>
+            <p style="font-size:13px;color:var(--muted);margin-top:3px;">Additional benefits</p>
+          </div>
+          <strong id="allowancesRow">—</strong>
+        </div>
+        <div class="salary-row">
+          <div>
+            <strong>Deductions</strong>
+            <p style="font-size:13px;color:var(--muted);margin-top:3px;">PF, tax & others</p>
+          </div>
+          <strong style="color:var(--red);" id="deductionsRow">—</strong>
         </div>
 
-        <div class="nav-section">
-            <p class="nav-label">WORKSPACE</p>
-            <a href="index.html" class="nav-link"><span>⌂</span><span>My Dayflow</span></a>
-            <a href="attendance.html" class="nav-link"><span>◷</span><span>Attendance</span></a>
-            <a href="workflow.html" class="nav-link"><span>◫</span><span>Workflow</span></a>
-            <a href="leave.html" class="nav-link"><span>☷</span><span>Leave</span></a>
-            <a href="payroll.html" class="nav-link active"><span>₹</span><span>Payroll</span></a>
+        <div class="net-total">
+          <span style="font-size:15px;font-weight:700;">Final Net Salary</span>
+          <strong id="netTotalRow" style="font-size:18px;">—</strong>
         </div>
 
-        <div class="nav-section">
-            <p class="nav-label">PERSONAL</p>
-            <a href="profile.html" class="nav-link"><span>◉</span><span>My Profile</span></a>
+        <p style="font-size:13px;color:var(--muted);margin-top:14px;">
+          Effective from: <strong id="effectiveFrom">—</strong>
+        </p>
+      </div>
+
+      <div class="insight-card">
+        <span class="section-kicker" style="color:#c7c1ff;">Salary Insight</span>
+        <h3 style="margin:12px 0 8px;color:white;">Salary clarity.</h3>
+        <p id="netRatioInsight">Loading your salary insights…</p>
+        <div class="insight-number" id="netRatioPct">—</div>
+        <span style="font-size:12px;color:#d4d0ef;font-weight:600;letter-spacing:1px;">NET PAY RATIO</span>
+      </div>
+
+    </section>
+
+    <!-- ADMIN SALARY UPDATE PANEL (SRS 3.6.2) — shown only to admins -->
+    <section id="adminSalarySection" style="display:none;">
+      <div class="content-card">
+        <span class="section-kicker">Admin Only</span>
+        <h3 style="margin:10px 0 6px;">Update Salary Structure</h3>
+        <p style="color:var(--muted);font-size:14px;margin-bottom:20px;">
+          As admin you can view and update payroll for any employee (SRS 3.6.2).
+        </p>
+
+        <div style="display:flex;gap:12px;margin-bottom:18px;flex-wrap:wrap;">
+          <input type="text" id="adminEmpIdInput" placeholder="Employee ID (e.g. EMP1001)"
+            style="flex:1;padding:11px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:14px;outline:none;min-width:200px;">
+          <button class="secondary-btn" id="adminLoadPayrollBtn">Load Employee Payroll</button>
         </div>
 
-        <div style="padding:20px 16px 10px;">
-            <button id="logoutBtn" style="width:100%;background:#29294a;color:#b7b7c8;border:none;padding:10px;border-radius:10px;cursor:pointer;font-size:12px;">Sign out</button>
-        </div>
-    </aside>
+        <div id="adminPayrollInfo" style="display:none;">
+          <p id="adminPayrollName" style="font-weight:700;font-size:15px;margin-bottom:16px;color:var(--primary);"></p>
 
-    <main class="dashboard-main">
-
-        <header class="topbar">
-            <div>
-                <span class="section-kicker">PAYROLL CENTER</span>
-                <h1>Your salary, <span>made clear.</span></h1>
-                <p>Track earnings, deductions and payslips in one place.</p>
+          <div class="salary-form-grid">
+            <div class="input-group">
+              <label>Basic Salary (₹)</label>
+              <input type="number" id="adminBasic" placeholder="50000" min="0">
             </div>
-            <div class="bell-wrap">
-              <button class="bell-btn" id="notifBell" title="Notifications">🔔<span class="notif-badge" id="notifBadge"></span></button>
-              <div class="notif-dropdown" id="notifDropdown">
-                <div class="notif-header"><strong>Notifications</strong><button class="notif-mark-all" id="markAllReadBtn">Mark all read</button></div>
-                <div class="notif-list"></div>
+            <div class="input-group">
+              <label>HRA (₹)</label>
+              <input type="number" id="adminHra" placeholder="20000" min="0">
+            </div>
+            <div class="input-group">
+              <label>Allowances (₹)</label>
+              <input type="number" id="adminAllowances" placeholder="15000" min="0">
+            </div>
+            <div class="input-group">
+              <label>Deductions (₹)</label>
+              <input type="number" id="adminDeductions" placeholder="5000" min="0">
+            </div>
+            <div class="input-group">
+              <label>Effective From</label>
+              <input type="date" id="adminEffectiveFrom">
+            </div>
+            <div style="display:flex;align-items:flex-end;">
+              <div style="background:var(--primary-light);border-radius:var(--radius-sm);padding:14px 16px;width:100%;">
+                <p style="font-size:12px;color:var(--muted);font-weight:600;">COMPUTED NET SALARY</p>
+                <p id="adminComputedNet" style="font-size:1.6rem;font-weight:800;color:var(--primary);margin-top:4px;">—</p>
               </div>
             </div>
-        </header>
+          </div>
 
-        <section class="salary-hero">
+          <button class="primary-btn" id="adminSavePayrollBtn" style="margin-top:6px;">
+            💾 Save Salary Structure
+          </button>
+        </div>
+      </div>
+    </section>
 
-            <div>
-                <span class="section-kicker" style="color:#c6c0ff;" id="netPayHeading">— • NET PAY</span>
-                <h2 id="netPayHero">—</h2>
-                <p>Your salary has been successfully processed.</p>
-
-                <p id="payrollLoading" style="color:var(--muted);font-size:13px;margin-top:10px;">Loading payroll data…</p>
-                <p id="payrollError" style="color:#ef4444;font-size:13px;margin-top:10px;display:none;"></p>
-
-                <button class="primary-btn" id="downloadPayslip" style="margin-top:20px;">
-                    ↓ Download Payslip
-                </button>
-            </div>
-
-            <div class="salary-circle">
-                <strong id="payrollStatus">—</strong>
-            </div>
-
-        </section>
-
-        <section class="payroll-summary-grid">
-
-            <div class="payroll-summary-card">
-                <span>GROSS EARNINGS</span>
-                <h3 id="grossEarnings">—</h3>
-                <p style="font-size:11px;color:var(--muted);">Monthly earnings</p>
-            </div>
-
-            <div class="payroll-summary-card">
-                <span>DEDUCTIONS</span>
-                <h3 id="deductionsTotal">—</h3>
-                <p style="font-size:11px;color:var(--muted);">Taxes & contributions</p>
-            </div>
-
-            <div class="payroll-summary-card">
-                <span>NET PAY</span>
-                <h3 id="netPaySummary">—</h3>
-                <p style="font-size:11px;color:var(--muted);">Amount credited</p>
-            </div>
-
-        </section>
-
-        <section class="payroll-layout">
-
-            <div class="content-card">
-
-                <span class="section-kicker">SALARY BREAKDOWN</span>
-                <h2 style="margin:8px 0 15px;">Where your salary goes</h2>
-
-                <div class="salary-row">
-                    <div><strong>Basic Salary</strong><p style="font-size:11px;color:var(--muted);">Base compensation</p></div>
-                    <strong id="basicRow">—</strong>
-                </div>
-
-                <div class="salary-row">
-                    <div><strong>House Rent Allowance</strong><p style="font-size:11px;color:var(--muted);">Monthly HRA</p></div>
-                    <strong id="hraRow">—</strong>
-                </div>
-
-                <div class="salary-row">
-                    <div><strong>Special Allowance</strong><p style="font-size:11px;color:var(--muted);">Additional benefits</p></div>
-                    <strong id="allowancesRow">—</strong>
-                </div>
-
-                <div class="salary-row">
-                    <div><strong>Deductions</strong><p style="font-size:11px;color:var(--muted);">Taxes & contributions</p></div>
-                    <strong style="color:var(--red);" id="deductionsRow">—</strong>
-                </div>
-
-                <div class="net-total">
-                    <span>Final Net Salary</span>
-                    <strong id="netTotalRow">—</strong>
-                </div>
-
-            </div>
-
-            <div class="insight-card">
-                <span class="section-kicker" style="color:#c7c1ff;">DAYFLOW INSIGHT</span>
-                <h2 style="margin-top:10px;">Salary clarity.</h2>
-                <p id="netRatioInsight">Loading…</p>
-
-                <div class="insight-number" id="netRatioPct">—</div>
-                <span style="font-size:11px;color:#d4d0ef;">NET PAY RATIO</span>
-            </div>
-
-        </section>
-
-    </main>
-
+  </main>
 </div>
 
+<div class="toast" id="toast"></div>
 <script src="js/api.js"></script>
 <script src="js/payroll.js"></script>
-
 </body>
 </html>

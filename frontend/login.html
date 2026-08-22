@@ -1,78 +1,139 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dayflow | Sign In</title>
-    <link rel="stylesheet" href="css/style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dayflow | Welcome</title>
+<link rel="stylesheet" href="css/style.css">
 </head>
-
 <body>
 
 <div class="login-page">
 
-    <section class="login-brand">
-        <div class="brand">
-            <div class="brand-mark">D</div>
-            Dayflow
-        </div>
+  <!-- BRAND PANEL -->
+  <section class="login-brand">
+    <div class="brand">
+      <div class="brand-mark">D</div>
+      Dayflow
+    </div>
 
-        <div class="brand-copy">
-            <h1>Work feels better <span>in flow.</span></h1>
-            <p>
-                A modern employee experience that brings attendance,
-                leave, payroll and workflow into one intelligent space.
-            </p>
-        </div>
+    <div class="brand-copy">
+      <h1>Every workday,<br><span>perfectly aligned.</span></h1>
+      <p>
+        A modern HR platform that brings attendance, leave,
+        payroll and approvals into one intelligent workspace.
+        Built for teams that move fast.
+      </p>
+    </div>
 
-        <div class="login-stats">
-            <div>
-                <strong>01</strong>
-                <span>One workspace</span>
+    <div class="login-stats">
+      <div>
+        <strong>01</strong>
+        <span>Unified workspace</span>
+      </div>
+      <div>
+        <strong>24/7</strong>
+        <span>Employee access</span>
+      </div>
+      <div>
+        <strong>100%</strong>
+        <span>Real-time data</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- FORM PANEL -->
+  <section class="login-form-area">
+    <div class="login-card">
+
+      <div class="auth-tabs">
+        <button class="auth-tab active" data-tab="signin">Sign In</button>
+        <button class="auth-tab"        data-tab="signup">Sign Up</button>
+      </div>
+
+      <!-- ── SIGN IN ── -->
+      <div class="auth-panel active" id="panel-signin">
+        <span class="section-kicker">WELCOME BACK</span>
+        <h2>Sign in to Dayflow</h2>
+        <p>Start your workday with clarity.</p>
+
+        <form id="loginForm">
+          <div class="input-group">
+            <label>Email Address</label>
+            <input type="email" id="signInEmail" placeholder="employee@dayflow.com" required autocomplete="email">
+          </div>
+          <div class="input-group">
+            <label>Password</label>
+            <input type="password" id="signInPassword" placeholder="Enter your password" required autocomplete="current-password">
+          </div>
+          <p id="loginError" style="color:var(--red);font-size:13px;margin:-8px 0 14px;display:none;"></p>
+          <button class="primary-btn full-btn" type="submit" id="signInBtn">
+            Enter Dayflow →
+          </button>
+        </form>
+
+        <div class="demo-box" style="margin-top:22px;">
+          <strong style="display:block;margin-bottom:6px;">Demo credentials</strong>
+          👔 Admin &nbsp;— admin@dayflow.com / Password!123<br>
+          👤 Employee — employee@dayflow.com / Password!123
+        </div>
+      </div>
+
+      <!-- ── SIGN UP ── -->
+      <div class="auth-panel" id="panel-signup">
+        <span class="section-kicker">JOIN DAYFLOW</span>
+        <h2>Create your account</h2>
+        <p>Register with your Employee ID issued by HR.</p>
+
+        <form id="registerForm">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+            <div class="input-group">
+              <label>Employee ID</label>
+              <input type="text" id="regEmployeeId" placeholder="EMP1001" required autocomplete="off">
             </div>
-            <div>
-                <strong>24/7</strong>
-                <span>Employee access</span>
+            <div class="input-group">
+              <label>Role</label>
+              <select id="regRole" required>
+                <option value="EMPLOYEE">Employee</option>
+                <option value="ADMIN">HR / Admin</option>
+              </select>
             </div>
-        </div>
-    </section>
-
-    <section class="login-form-area">
-        <div class="login-card">
-
-            <span class="section-kicker">WELCOME BACK</span>
-            <h2>Sign in to Dayflow</h2>
-            <p>Start your workday with clarity.</p>
-
-            <form id="loginForm">
-
-                <div class="input-group">
-                    <label>Email Address</label>
-                    <input type="email" id="email" placeholder="employee@dayflow.com" required>
-                </div>
-
-                <div class="input-group">
-                    <label>Password</label>
-                    <input type="password" id="password" placeholder="Enter password" required>
-                </div>
-
-                <button class="primary-btn full-btn" type="submit">
-                    Enter Dayflow →
-                </button>
-
-            </form>
-
-            <div class="demo-box">
-                Demo: employee@dayflow.com / Password!123
+          </div>
+          <div class="input-group">
+            <label>Full Name</label>
+            <input type="text" id="regFullName" placeholder="John Doe" required autocomplete="name">
+          </div>
+          <div class="input-group">
+            <label>Email Address</label>
+            <input type="email" id="regEmail" placeholder="employee@dayflow.com" required autocomplete="email">
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+            <div class="input-group">
+              <label>Password</label>
+              <input type="password" id="regPassword" placeholder="Min 8 chars" required autocomplete="new-password">
             </div>
+            <div class="input-group">
+              <label>Confirm Password</label>
+              <input type="password" id="regConfirm" placeholder="Repeat password" required autocomplete="new-password">
+            </div>
+          </div>
+          <p id="registerError" style="color:var(--red);font-size:13px;margin:-8px 0 14px;display:none;"></p>
+          <p id="registerSuccess" style="color:var(--green);font-size:13px;margin:-8px 0 14px;background:var(--green-light);padding:12px;border-radius:8px;display:none;"></p>
+          <button class="primary-btn full-btn" type="submit" id="signUpBtn">
+            Create Account →
+          </button>
+        </form>
 
-        </div>
-    </section>
+        <p style="margin-top:16px;font-size:13px;color:var(--muted);text-align:center;">
+          Password must be at least 8 characters and include a number and special character.
+        </p>
+      </div>
 
+    </div>
+  </section>
 </div>
 
 <script src="js/api.js"></script>
 <script src="js/login.js"></script>
-
 </body>
 </html>

@@ -281,8 +281,10 @@
 
     <!-- TABS -->
     <div class="admin-tabs">
-      <button class="admin-tab active" data-tab="pending">Pending Requests <span id="pendingBadge" style="background:#fef3c7;color:#b45309;padding:1px 7px;border-radius:10px;font-size:10px;margin-left:4px;"></span></button>
-      <button class="admin-tab" data-tab="history">All Leave History</button>
+      <button class="admin-tab active" data-tab="pending">Pending Requests <span id="pendingBadge" style="background:var(--orange-light);color:var(--orange);padding:2px 8px;border-radius:10px;font-size:11px;margin-left:5px;font-weight:700;"></span></button>
+      <button class="admin-tab" data-tab="history">Leave History</button>
+      <button class="admin-tab" data-tab="attendance">Attendance Records</button>
+      <button class="admin-tab" data-tab="payroll">Payroll Management</button>
       <button class="admin-tab" data-tab="employees">Employees</button>
     </div>
 
@@ -362,6 +364,88 @@
             <tr><td colspan="5" class="state-msg">Loading…</td></tr>
           </tbody>
         </table>
+      </div>
+    </div>
+
+    <!-- TAB: ATTENDANCE RECORDS (SRS 3.2.2) -->
+    <div class="tab-panel" id="tab-attendance">
+      <div class="filter-bar">
+        <input type="date" id="attDateFilter" style="padding:10px 14px;">
+        <input type="text" id="attEmpFilter" placeholder="Employee ID (optional)" style="padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:14px;outline:none;background:white;">
+        <select id="attStatusFilter" style="padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:14px;outline:none;background:white;">
+          <option value="">All statuses</option>
+          <option value="PRESENT">Present</option>
+          <option value="HALF_DAY">Half Day</option>
+          <option value="LEAVE">On Leave</option>
+          <option value="ABSENT">Absent</option>
+        </select>
+        <button class="primary-btn" onclick="loadAdminAttendance()" style="padding:9px 16px;font-size:13px;">↺ Refresh</button>
+      </div>
+      <div class="content-card" style="overflow:auto;">
+        <table class="data-table" id="adminAttTable">
+          <thead>
+            <tr>
+              <th>EMPLOYEE</th>
+              <th>DATE</th>
+              <th>CHECK-IN</th>
+              <th>CHECK-OUT</th>
+              <th>HOURS WORKED</th>
+              <th>STATUS</th>
+            </tr>
+          </thead>
+          <tbody id="adminAttBody">
+            <tr><td colspan="6" class="state-msg">Select a date and click Refresh.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TAB: PAYROLL MANAGEMENT (SRS 3.6.2) -->
+    <div class="tab-panel" id="tab-payroll">
+      <div class="filter-bar">
+        <input type="text" id="payrollEmpSearch" placeholder="Enter Employee ID…" style="flex:1;max-width:280px;">
+        <button class="primary-btn" onclick="loadAdminPayroll()" style="padding:9px 16px;font-size:13px;">Load Payroll</button>
+      </div>
+
+      <div id="adminPayrollCard" style="display:none;">
+        <div class="content-card" style="margin-bottom:18px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
+            <div>
+              <span class="section-kicker">Current Structure</span>
+              <h3 id="adminPayrollEmpLabel" style="margin-top:8px;"></h3>
+            </div>
+            <span id="adminPayrollNetBadge" style="font-size:1.5rem;font-weight:800;color:var(--primary);"></span>
+          </div>
+          <table class="data-table" id="adminPayrollTable">
+            <thead><tr><th>COMPONENT</th><th>AMOUNT</th></tr></thead>
+            <tbody id="adminPayrollBody"></tbody>
+          </table>
+        </div>
+
+        <div class="content-card">
+          <span class="section-kicker">Update Salary Structure</span>
+          <h3 style="margin:10px 0 18px;">Set new salary — effective from date chosen</h3>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;flex-wrap:wrap;" id="adminSalaryFormGrid">
+            <div class="input-group"><label>Basic Salary (₹)</label><input type="number" id="apBasic" placeholder="50000" min="0"></div>
+            <div class="input-group"><label>HRA (₹)</label><input type="number" id="apHra" placeholder="20000" min="0"></div>
+            <div class="input-group"><label>Allowances (₹)</label><input type="number" id="apAllowances" placeholder="10000" min="0"></div>
+            <div class="input-group"><label>Deductions (₹)</label><input type="number" id="apDeductions" placeholder="5000" min="0"></div>
+            <div class="input-group"><label>Effective From</label><input type="date" id="apEffectiveFrom"></div>
+            <div style="display:flex;align-items:flex-end;">
+              <div style="background:var(--primary-light);border-radius:var(--radius-sm);padding:14px 16px;width:100%;">
+                <p style="font-size:11px;color:var(--muted);font-weight:700;margin-bottom:4px;">COMPUTED NET</p>
+                <p id="apComputedNet" style="font-size:1.5rem;font-weight:800;color:var(--primary);">—</p>
+              </div>
+            </div>
+          </div>
+          <button class="primary-btn" id="adminSavePayrollBtn" style="margin-top:8px;">
+            💾 Save Salary Structure
+          </button>
+        </div>
+      </div>
+
+      <div id="adminPayrollEmpty" style="text-align:center;padding:48px;color:var(--muted);">
+        <p style="font-size:15px;">Enter an Employee ID above and click <strong>Load Payroll</strong> to view or edit their salary.</p>
       </div>
     </div>
 

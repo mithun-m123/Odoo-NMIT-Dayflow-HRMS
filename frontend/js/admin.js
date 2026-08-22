@@ -382,3 +382,172 @@ initAdminBell();
 
 loadStats();
 loadPendingLeaves();
+
+
+// ─── Tab handler: trigger load on new tabs ────────────────────────────────────
+// Patch the existing tab listener to also handle new tabs
+const _origTabListener = document.querySelectorAll('.admin-tab');
+_origTabListener.forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (btn.dataset.tab === 'attendance') loadAdminAttendance();
+    if (btn.dataset.tab === 'payroll')    resetAdminPayroll();
+  });
+});
+
+// ─── ATTENDANCE RECORDS (SRS 3.2.2) ──────────────────────────────────────────
+
+// Set default date to today
+const attDateEl = document.getElementById('attDateFilter');
+if (attDateEl && !attDateEl.value) attDateEl.value = new Date().toISOString().slice(0, 10);
+
+window.loadAdminAttendance = async function () {
+  const tbody = document.getElementById('adminAttBody');
+  if (!tbody) return;
+  tbody.innerHTML = '<tr><td colspan="6" class="state-msg">Loading…</td></tr>';
+
+  const date    = document.getElementById('attDateFilter')?.value || '';
+  const empId   = document.getElementById('attEmpFilter')?.value.trim() || '';
+  const status  = document.getElementById('attStatusFilter')?.value || '';
+
+  try {
+    const params = { limit: 100 };
+    if (date)   params.date       = date;
+    if (empId)  params.employeeId = empId;
+    if (status) params.status     = status;
+
+    const res   = await api.listAllAttendance(params);
+    const items = res.data?.items || [];
+
+    if (items.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="6" class="state-msg">No attendance records found.</td></tr>';
+      return;
+    }
+
+    const statusCls = { PRESENT: 'approved', HALF_DAY: 'pending', LEAVE: '', ABSENT: 'rejected' };
+    const statusCol = { PRESENT: 'var(--green)', HALF_DAY: 'var(--orange)', LEAVE: 'var(--primary)', ABSENT: 'var(--red)' };
+
+    tbody.innerHTML = items.map(r => {
+      const checkin  = r.checkIn  ? new Date(r.checkIn).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '—';
+      const checkout = r.checkOut ? new Date(r.checkOut).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '—';
+      let worked = '—';
+      if (r.checkIn && r.checkOut) {
+        const s = Math.floor((new Date(r.checkOut) - new Date(r.checkIn)) / 1000);
+        worked = `${Math.floor(s / 3600)}h ${Math.floor((s % 3600) / 60)}m`;
+      }
+      const sc  = statusCls[r.status] || '';
+      const col = statusCol[r.status] || '#6b7280';
+      const lbl = r.status ? r.status.replace('_', ' ') : '—';
+      return `<tr>
+        <td><span class="emp-avatar-sm">${initials(r.employeeId)}</span>${r.employeeId}</td>
+        <td>${r.date}</td>
+        <td>${checkin}</td>
+        <td>${checkout}</td>
+        <td>${worked}</td>
+        <td><span class="status ${sc}" style="${sc ? '' : `background:#f0eeff;color:${col};`}">${lbl}</span></td>
+      </tr>`;
+    }).join('');
+  } catch (err) {
+    tbody.innerHTML = `<tr><td colspan="6" class="state-msg">Error: ${err.message}</td></tr>`;
+  }
+};
+
+// ─── PAYROLL MANAGEMENT (SRS 3.6.2) ──────────────────────────────────────────
+
+let _apTargetEmpId = null;
+
+function resetAdminPayroll() {
+  _apTargetEmpId = null;
+  document.getElementById('adminPayrollCard')?.setAttribute('style', 'display:none;');
+  document.getElementById('adminPayrollEmpty')?.setAttribute('style', 'display:block;text-align:center;padding:48px;color:var(--muted);');
+}
+
+function apUpdateNet() {
+  const b = Number(document.getElementById('apBasic')?.value)      || 0;
+  const h = Number(document.getElementById('apHra')?.value)        || 0;
+  const a = Number(document.getElementById('apAllowances')?.value) || 0;
+  const d = Number(document.getElementById('apDeductions')?.value) || 0;
+  const el = document.getElementById('apComputedNet');
+  if (el) el.textContent = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(b + h + a - d);
+}
+['apBasic','apHra','apAllowances','apDeductions'].forEach(id => {
+  document.getElementById(id)?.addEventListener('input', apUpdateNet);
+});
+
+window.loadAdminPayroll = async function () {
+  const empId = document.getElementById('payrollEmpSearch')?.value.trim();
+  if (!empId) { showToast('Enter an Employee ID.'); return; }
+
+  const card  = document.getElementById('adminPayrollCard');
+  const empty = document.getElementById('adminPayrollEmpty');
+
+  try {
+    const res = await apiFetch(`/payroll/${empId}`);
+    _apTargetEmpId = empId;
+    const p   = res.data;
+    const cur = p.currency || 'INR';
+    const gross = (p.basic||0)+(p.hra||0)+(p.allowances||0);
+
+    document.getElementById('adminPayrollEmpLabel').textContent = `Employee: ${empId}`;
+    document.getElementById('adminPayrollNetBadge').textContent =
+      new Intl.NumberFormat('en-IN', { style: 'currency', currency: cur, maximumFractionDigits: 0 }).format(p.netSalary || 0) + ' / mo';
+
+    document.getElementById('adminPayrollBody').innerHTML = `
+      <tr><td>Basic Salary</td><td>${new Intl.NumberFormat('en-IN',{style:'currency',currency:cur,maximumFractionDigits:0}).format(p.basic||0)}</td></tr>
+      <tr><td>HRA</td><td>${new Intl.NumberFormat('en-IN',{style:'currency',currency:cur,maximumFractionDigits:0}).format(p.hra||0)}</td></tr>
+      <tr><td>Allowances</td><td>${new Intl.NumberFormat('en-IN',{style:'currency',currency:cur,maximumFractionDigits:0}).format(p.allowances||0)}</td></tr>
+      <tr><td>Deductions</td><td style="color:var(--red);">- ${new Intl.NumberFormat('en-IN',{style:'currency',currency:cur,maximumFractionDigits:0}).format(p.deductions||0)}</td></tr>
+      <tr style="font-weight:700;"><td>Net Salary</td><td style="color:var(--primary);">${new Intl.NumberFormat('en-IN',{style:'currency',currency:cur,maximumFractionDigits:0}).format(p.netSalary||0)}</td></tr>
+    `;
+
+    document.getElementById('apBasic').value      = p.basic      || '';
+    document.getElementById('apHra').value        = p.hra        || '';
+    document.getElementById('apAllowances').value = p.allowances || '';
+    document.getElementById('apDeductions').value = p.deductions || '';
+    document.getElementById('apEffectiveFrom').value = p.effectiveFrom
+      ? new Date(p.effectiveFrom).toISOString().slice(0,10)
+      : new Date().toISOString().slice(0,10);
+    apUpdateNet();
+
+    if (card)  card.style.display  = 'block';
+    if (empty) empty.style.display = 'none';
+  } catch (err) {
+    if (err.status === 404) {
+      showToast(`No payroll for ${empId} yet — fill in the form to create it.`);
+      _apTargetEmpId = empId;
+      document.getElementById('adminPayrollEmpLabel').textContent = `New payroll for: ${empId}`;
+      document.getElementById('adminPayrollNetBadge').textContent = '';
+      document.getElementById('adminPayrollBody').innerHTML = '<tr><td colspan="2" style="text-align:center;color:var(--muted);padding:16px;">No existing record</td></tr>';
+      document.getElementById('apEffectiveFrom').value = new Date().toISOString().slice(0, 10);
+      if (card)  card.style.display  = 'block';
+      if (empty) empty.style.display = 'none';
+    } else {
+      showToast('Error: ' + err.message);
+    }
+  }
+};
+
+document.getElementById('adminSavePayrollBtn')?.addEventListener('click', async () => {
+  if (!_apTargetEmpId) { showToast('Load an employee first.'); return; }
+  const basic        = Number(document.getElementById('apBasic')?.value)       || 0;
+  const hra          = Number(document.getElementById('apHra')?.value)         || 0;
+  const allowances   = Number(document.getElementById('apAllowances')?.value)  || 0;
+  const deductions   = Number(document.getElementById('apDeductions')?.value)  || 0;
+  const effectiveFrom = document.getElementById('apEffectiveFrom')?.value;
+  if (basic <= 0)    { showToast('Basic salary must be > 0.'); return; }
+  if (!effectiveFrom){ showToast('Set an effective date.'); return; }
+
+  const btn = document.getElementById('adminSavePayrollBtn');
+  btn.disabled = true; btn.textContent = 'Saving…';
+  try {
+    await apiFetch(`/payroll/${_apTargetEmpId}`, {
+      method: 'PUT',
+      body: JSON.stringify({ basic, hra, allowances, deductions, effectiveFrom }),
+    });
+    showToast(`✅ Salary updated for ${_apTargetEmpId}.`);
+    loadAdminPayroll(); // reload
+  } catch (err) {
+    showToast('Failed: ' + err.message);
+  } finally {
+    btn.disabled = false; btn.textContent = '💾 Save Salary Structure';
+  }
+});

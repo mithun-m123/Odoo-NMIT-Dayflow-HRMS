@@ -1,76 +1,126 @@
 /**
- * login.js — Authenticates user via POST /v1/auth/login
- * Stores tokens + user in localStorage via Auth, then redirects to dashboard.
+ * login.js — Handles Sign In and Sign Up per SRS 3.1.1 / 3.1.2
  */
 
-// If already logged in, skip login page
-if (Auth.isLoggedIn()) {
-  window.location.href = 'index.html';
+// Already logged in → skip to dashboard
+if (Auth.isLoggedIn()) window.location.href = 'index.html';
+
+// ─── Tab switching ────────────────────────────────────────────────────────────
+document.querySelectorAll('.auth-tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.auth-tab').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.auth-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('panel-' + btn.dataset.tab).classList.add('active');
+  });
+});
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+function showError(elId, msg) {
+  const el = document.getElementById(elId);
+  if (!el) return;
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+function clearMsg(elId) {
+  const el = document.getElementById(elId);
+  if (el) el.style.display = 'none';
 }
 
-const loginForm    = document.getElementById('loginForm');
-const emailInput   = document.getElementById('email');
-const passwordInput = document.getElementById('password');
-const submitBtn    = loginForm.querySelector('button[type="submit"]');
+// ─── SIGN IN ──────────────────────────────────────────────────────────────────
+const loginForm = document.getElementById('loginForm');
+const signInBtn = document.getElementById('signInBtn');
 
-// Error display element — injected below the form if not already in HTML
-let errorBox = document.getElementById('loginError');
-if (!errorBox) {
-  errorBox = document.createElement('p');
-  errorBox.id = 'loginError';
-  errorBox.style.cssText =
-    'color:#ef4444;font-size:13px;margin-top:12px;text-align:center;display:none;';
-  loginForm.appendChild(errorBox);
-}
-
-function showError(msg) {
-  errorBox.textContent = msg;
-  errorBox.style.display = 'block';
-}
-
-function clearError() {
-  errorBox.style.display = 'none';
-}
-
-loginForm.addEventListener('submit', async function (e) {
+loginForm?.addEventListener('submit', async (e) => {
   e.preventDefault();
-  clearError();
+  clearMsg('loginError');
 
-  const email    = emailInput.value.trim();
-  const password = passwordInput.value.trim();
+  const email    = document.getElementById('signInEmail').value.trim();
+  const password = document.getElementById('signInPassword').value;
 
-  if (!email || !password) {
-    showError('Please enter your email and password.');
-    return;
-  }
+  if (!email || !password) { showError('loginError', 'Please fill in all fields.'); return; }
 
-  submitBtn.disabled = true;
-  submitBtn.textContent = 'Signing in…';
+  signInBtn.disabled     = true;
+  signInBtn.textContent  = 'Signing in…';
 
   try {
     const res = await api.login(email, password);
-
-    // Store tokens + user info
     Auth.setSession({
       accessToken:  res.data.accessToken,
       refreshToken: res.data.refreshToken,
       user:         res.data.user,
     });
-
-    // Redirect to dashboard
     window.location.href = 'index.html';
+  } catch (err) {
+    const msg =
+      err.code === 'INVALID_CREDENTIALS'  ? 'Incorrect email or password.'           :
+      err.code === 'EMAIL_NOT_VERIFIED'   ? 'Please verify your email first.'        :
+      err.code === 'ACCOUNT_DISABLED'     ? 'Account disabled. Contact HR.'          :
+      err.message || 'Login failed. Please try again.';
+    showError('loginError', msg);
+    signInBtn.disabled    = false;
+    signInBtn.textContent = 'Enter Dayflow →';
+  }
+});
+
+// ─── SIGN UP ──────────────────────────────────────────────────────────────────
+const registerForm = document.getElementById('registerForm');
+const signUpBtn    = document.getElementById('signUpBtn');
+
+registerForm?.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  clearMsg('registerError');
+  clearMsg('registerSuccess');
+
+  const employeeId = document.getElementById('regEmployeeId').value.trim();
+  const role       = document.getElementById('regRole').value;
+  const fullName   = document.getElementById('regFullName').value.trim();
+  const email      = document.getElementById('regEmail').value.trim();
+  const password   = document.getElementById('regPassword').value;
+  const confirm    = document.getElementById('regConfirm').value;
+
+  if (!employeeId || !fullName || !email || !password) {
+    showError('registerError', 'All fields are required.'); return;
+  }
+  if (password !== confirm) {
+    showError('registerError', 'Passwords do not match.'); return;
+  }
+  if (password.length < 8) {
+    showError('registerError', 'Password must be at least 8 characters.'); return;
+  }
+  if (!/[0-9]/.test(password) || !/[^A-Za-z0-9]/.test(password)) {
+    showError('registerError', 'Password must include a number and a special character.'); return;
+  }
+
+  signUpBtn.disabled    = true;
+  signUpBtn.textContent = 'Creating account…';
+
+  try {
+    await apiFetch('/auth/register', {
+      method: 'POST',
+      body: JSON.stringify({ employeeId, fullName, email, password, role }),
+    });
+
+    const successEl = document.getElementById('registerSuccess');
+    if (successEl) {
+      successEl.textContent = '✅ Account created! Check your email to verify, then sign in.';
+      successEl.style.display = 'block';
+    }
+    registerForm.reset();
+
+    // Auto-switch to sign in tab after 2s
+    setTimeout(() => {
+      document.querySelector('[data-tab="signin"]').click();
+    }, 2500);
 
   } catch (err) {
-    const msg = err.code === 'INVALID_CREDENTIALS'
-      ? 'Incorrect email or password.'
-      : err.code === 'EMAIL_NOT_VERIFIED'
-        ? 'Please verify your email before logging in.'
-        : err.code === 'ACCOUNT_DISABLED'
-          ? 'Your account has been disabled. Contact HR.'
-          : err.message || 'Login failed. Please try again.';
-
-    showError(msg);
-    submitBtn.disabled = false;
-    submitBtn.textContent = 'Enter Dayflow →';
+    const msg =
+      err.code === 'DUPLICATE_EMAIL'       ? 'An account with this email already exists.'       :
+      err.code === 'DUPLICATE_EMPLOYEEID'  ? 'An account with this Employee ID already exists.' :
+      err.message || 'Registration failed. Please try again.';
+    showError('registerError', msg);
+  } finally {
+    signUpBtn.disabled    = false;
+    signUpBtn.textContent = 'Create Account →';
   }
 });

@@ -129,10 +129,11 @@ function renderHistory(leaves) {
 // ─── Load balance + history ───────────────────────────────────────────────────
 
 async function loadLeaveData() {
+  const filterStatus = document.getElementById('historyFilter')?.value || '';
   try {
     const [balanceRes, historyRes] = await Promise.allSettled([
       api.getMyLeaveBalance(),
-      api.getMyLeaves({ limit: 20 }),
+      api.getMyLeaves({ limit: 20, ...(filterStatus ? { status: filterStatus } : {}) }),
     ]);
 
     if (balanceRes.status === 'fulfilled') {
@@ -218,3 +219,6 @@ if (leaveForm) {
 
 loadLeaveData();
 initNotificationBell();
+
+// History filter
+document.getElementById('historyFilter')?.addEventListener('change', loadLeaveData);
