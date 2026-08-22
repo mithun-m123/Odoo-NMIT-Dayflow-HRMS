@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dayflow | Leave Management</title>
+    <title>Dayflow | Leave</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 
@@ -11,229 +11,107 @@
 
 <div class="app-shell">
 
-    <!-- SIDEBAR -->
     <aside class="sidebar">
-
         <div class="sidebar-logo">
             <div class="brand-mark small">D</div>
-
-            <div>
-                <strong>Dayflow</strong>
-                <span>EMPLOYEE PORTAL</span>
-            </div>
+            <div><strong>Dayflow</strong><span>EMPLOYEE PORTAL</span></div>
         </div>
 
         <div class="nav-section">
-
             <p class="nav-label">WORKSPACE</p>
-
-            <a href="index.html" class="nav-link">
-                <span>⌂</span>
-                <span>My Dayflow</span>
-            </a>
-
-            <a href="attendance.html" class="nav-link">
-                <span>◷</span>
-                <span>Attendance</span>
-            </a>
-
-            <a href="index.html#workflow" class="nav-link">
-                <span>◫</span>
-                <span>Workflow</span>
-            </a>
-
-            <a href="leave.html" class="nav-link active">
-                <span>☷</span>
-                <span>Leave</span>
-            </a>
-
-            <a href="#" class="nav-link">
-                <span>₹</span>
-                <span>Payroll</span>
-            </a>
-
+            <a href="index.html" class="nav-link"><span>⌂</span><span>My Dayflow</span></a>
+            <a href="attendance.html" class="nav-link"><span>◷</span><span>Attendance</span></a>
+            <a href="workflow.html" class="nav-link"><span>◫</span><span>Workflow</span></a>
+            <a href="leave.html" class="nav-link active"><span>☷</span><span>Leave</span></a>
+            <a href="payroll.html" class="nav-link"><span>₹</span><span>Payroll</span></a>
         </div>
 
         <div class="nav-section">
-
             <p class="nav-label">PERSONAL</p>
-
-            <a href="profile.html" class="nav-link">
-                <span>◉</span>
-                <span>My Profile</span>
-            </a>
-
+            <a href="profile.html" class="nav-link"><span>◉</span><span>My Profile</span></a>
         </div>
 
-        <div class="sidebar-bottom">
-            <strong>Need help?</strong>
-            <span>Contact HR Support</span>
+        <div style="padding:20px 16px 10px;">
+            <button id="logoutBtn" style="width:100%;background:#29294a;color:#b7b7c8;border:none;padding:10px;border-radius:10px;cursor:pointer;font-size:12px;">Sign out</button>
         </div>
-
     </aside>
 
-
-    <!-- MAIN CONTENT -->
     <main class="dashboard-main">
 
         <header class="topbar">
-
             <div>
                 <span class="section-kicker">TIME OFF MANAGEMENT</span>
-
                 <h1>Take time. <span>Stay in flow.</span></h1>
-
-                <p>
-                    Plan, request and track your time away from work.
-                </p>
+                <p>Plan, request and track your time away from work.</p>
             </div>
-
-            <div class="user-menu">
-
-                <div class="user-avatar">JD</div>
-
-                <div>
-                    <strong>John Doe</strong>
-                    <span>Software Engineer</span>
-                </div>
-
-            </div>
-
         </header>
-
-
-        <!-- LEAVE BALANCE -->
 
         <section class="leave-balance-grid">
 
-            <div class="leave-balance-card annual">
-
-                <div class="balance-icon">☀</div>
-
+            <div class="leave-balance-card">
                 <span>ANNUAL LEAVE</span>
-
-                <h2>12 <small>days</small></h2>
-
-                <p>Available balance</p>
-
-                <div class="balance-bar">
-                    <div class="balance-progress annual-progress"></div>
-                </div>
-
+                <h2 id="annualBalance">— Days</h2>
+                <p style="color:var(--muted);font-size:11px;">Available balance</p>
             </div>
 
-
-            <div class="leave-balance-card sick">
-
-                <div class="balance-icon">♥</div>
-
+            <div class="leave-balance-card">
                 <span>SICK LEAVE</span>
-
-                <h2>6 <small>days</small></h2>
-
-                <p>Available balance</p>
-
-                <div class="balance-bar">
-                    <div class="balance-progress sick-progress"></div>
-                </div>
-
+                <h2 id="sickBalance">— Days</h2>
+                <p style="color:var(--muted);font-size:11px;">Available balance</p>
             </div>
 
-
-            <div class="leave-balance-card personal">
-
-                <div class="balance-icon">★</div>
-
+            <div class="leave-balance-card">
                 <span>PERSONAL LEAVE</span>
-
-                <h2>4 <small>days</small></h2>
-
-                <p>Available balance</p>
-
-                <div class="balance-bar">
-                    <div class="balance-progress personal-progress"></div>
-                </div>
-
+                <h2 id="personalBalance">Unlimited</h2>
+                <p style="color:var(--muted);font-size:11px;">Available balance</p>
             </div>
 
         </section>
 
-
         <section class="leave-layout">
 
-            <!-- APPLY LEAVE -->
+            <div class="content-card">
 
-            <div class="content-card leave-form-card">
-
-                <span class="section-kicker">
-                    NEW REQUEST
-                </span>
-
-                <h2>Request time off</h2>
+                <span class="section-kicker">NEW REQUEST</span>
+                <h2 style="margin:8px 0 18px;">Request time off</h2>
 
                 <form id="leaveForm">
 
-                    <label>Leave Type</label>
-
-                    <select id="leaveType" required>
-                        <option value="">Select leave type</option>
-                        <option value="Annual Leave">Annual Leave</option>
-                        <option value="Sick Leave">Sick Leave</option>
-                        <option value="Personal Leave">Personal Leave</option>
-                    </select>
-
+                    <div class="input-group">
+                        <label>Leave Type</label>
+                        <select id="leaveType" required>
+                            <option value="">Select leave type</option>
+                            <option>Annual Leave</option>
+                            <option>Sick Leave</option>
+                            <option>Personal Leave</option>
+                        </select>
+                    </div>
 
                     <div class="date-grid">
 
-                        <div>
+                        <div class="input-group">
                             <label>Start Date</label>
-
-                            <input
-                                type="date"
-                                id="startDate"
-                                required
-                            >
+                            <input type="date" id="startDate" required>
                         </div>
 
-
-                        <div>
+                        <div class="input-group">
                             <label>End Date</label>
-
-                            <input
-                                type="date"
-                                id="endDate"
-                                required
-                            >
+                            <input type="date" id="endDate" required>
                         </div>
 
                     </div>
 
-
-                    <div class="leave-days-preview">
-
+                    <div class="leave-preview">
                         <span>REQUESTED TIME</span>
-
-                        <strong id="totalDays">
-                            Select dates
-                        </strong>
-
+                        <strong id="totalDays">Select dates</strong>
                     </div>
 
+                    <div class="input-group">
+                        <label>Reason</label>
+                        <textarea id="reason" rows="4" placeholder="Why do you need time off?" required></textarea>
+                    </div>
 
-                    <label>Reason</label>
-
-                    <textarea
-                        id="reason"
-                        rows="4"
-                        placeholder="Tell us briefly why you need time off..."
-                        required
-                    ></textarea>
-
-
-                    <button
-                        type="submit"
-                        class="primary-btn leave-submit"
-                    >
+                    <button class="primary-btn full-btn" type="submit">
                         Submit Leave Request →
                     </button>
 
@@ -241,151 +119,40 @@
 
             </div>
 
+            <div class="insight-card">
+                <span class="section-kicker" style="color:#c7c1ff;">DAYFLOW INSIGHT</span>
+                <h2 style="margin-top:10px;">Your time matters.</h2>
+                <p>You have a healthy leave balance available. Plan ahead to keep your team informed.</p>
 
-            <!-- SMART LEAVE INSIGHT -->
-
-            <div class="leave-insight-card">
-
-                <span class="section-kicker">
-                    DAYFLOW INSIGHT
-                </span>
-
-                <h2>Your time, visualized.</h2>
-
-                <p>
-                    You have plenty of leave available. Planning ahead helps your team stay in flow.
-                </p>
-
-
-                <div class="leave-insight-circle">
-
-                    <strong>22</strong>
-
-                    <span>DAYS LEFT</span>
-
-                </div>
-
-
-                <div class="insight-item">
-
-                    <span>Used this year</span>
-
-                    <strong>8 days</strong>
-
-                </div>
-
-
-                <div class="insight-item">
-
-                    <span>Available balance</span>
-
-                    <strong>22 days</strong>
-
-                </div>
-
+                <div class="insight-number" id="totalBalance">—</div>
+                <span style="color:#d4d0ef;font-size:11px;">TOTAL DAYS AVAILABLE</span>
             </div>
 
         </section>
 
+        <section class="content-card">
 
-        <!-- LEAVE HISTORY -->
-
-        <section class="content-card leave-history-card">
-
-            <div class="leave-history-header">
-
-                <div>
-
-                    <span class="section-kicker">
-                        REQUEST HISTORY
-                    </span>
-
-                    <h2>Your leave journey</h2>
-
-                </div>
-
-                <span class="history-count">
-                    3 REQUESTS
-                </span>
-
-            </div>
-
+            <span class="section-kicker">REQUEST HISTORY</span>
+            <h2 style="margin:8px 0 15px;">Your leave journey</h2>
 
             <div id="leaveHistory">
 
-
-                <div class="leave-history-row">
-
-                    <div class="leave-type-icon annual-icon">
-                        ☀
-                    </div>
-
-                    <div class="leave-history-info">
-
+                <div class="history-row">
+                    <div>
                         <strong>Annual Leave</strong>
-
-                        <span>12 Aug 2026 – 14 Aug 2026</span>
-
+                        <p style="font-size:11px;color:var(--muted);margin-top:4px;">12 Aug 2026 – 14 Aug 2026</p>
                     </div>
-
-                    <div class="leave-days">
-                        3 Days
-                    </div>
-
-                    <span class="status approved">
-                        Approved
-                    </span>
-
+                    <strong>3 Days</strong>
+                    <span class="status approved">Approved</span>
                 </div>
 
-
-                <div class="leave-history-row">
-
-                    <div class="leave-type-icon sick-icon">
-                        ♥
-                    </div>
-
-                    <div class="leave-history-info">
-
-                        <strong>Sick Leave</strong>
-
-                        <span>28 Jul 2026 – 29 Jul 2026</span>
-
-                    </div>
-
-                    <div class="leave-days">
-                        2 Days
-                    </div>
-
-                    <span class="status approved">
-                        Approved
-                    </span>
-
-                </div>
-
-
-                <div class="leave-history-row">
-
-                    <div class="leave-type-icon personal-icon">
-                        ★
-                    </div>
-
-                    <div class="leave-history-info">
-
+                <div class="history-row">
+                    <div>
                         <strong>Personal Leave</strong>
-
-                        <span>20 Aug 2026 – 21 Aug 2026</span>
-
+                        <p style="font-size:11px;color:var(--muted);margin-top:4px;">20 Aug 2026 – 21 Aug 2026</p>
                     </div>
-
-                    <div class="leave-days">
-                        2 Days
-                    </div>
-
-                    <span class="status pending">
-                        Pending
-                    </span>
-
+                    <strong>2 Days</strong>
+                    <span class="status pending">Pending</span>
                 </div>
 
             </div>
@@ -396,6 +163,7 @@
 
 </div>
 
+<script src="js/api.js"></script>
 <script src="js/leave.js"></script>
 
 </body>

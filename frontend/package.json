@@ -1,0 +1,11 @@
+{
+  "name": "dayflow-hrms-frontend",
+  "version": "1.0.0",
+  "description": "Dayflow HRMS static frontend",
+  "scripts": {
+    "start": "npx serve . --listen 3000"
+  },
+  "devDependencies": {
+    "serve": "^14.2.3"
+  }
+}

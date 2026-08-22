@@ -1,202 +1,603 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dayflow | Attendance</title>
 
-    <title>Dayflow Attendance</title>
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
-    <link rel="stylesheet" href="css/style.css">
+body {
+    font-family: Arial, sans-serif;
+    background: #f5f6fa;
+    color: #202030;
+}
+
+.app {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* SIDEBAR */
+
+.sidebar {
+    width: 240px;
+    background: #17172b;
+    color: white;
+    padding: 25px 15px;
+    flex-shrink: 0;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 45px;
+    padding: 0 10px;
+}
+
+.logo-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #635bff, #a855f7);
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.logo h2 {
+    font-size: 22px;
+}
+
+.logo p {
+    font-size: 9px;
+    color: #aaa;
+    letter-spacing: 1px;
+}
+
+.menu-title {
+    font-size: 10px;
+    color: #777;
+    margin: 25px 12px 10px;
+    letter-spacing: 1px;
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #b7b7c8;
+    text-decoration: none;
+    padding: 13px 14px;
+    margin: 5px 0;
+    border-radius: 12px;
+    transition: .3s;
+}
+
+.nav-link:hover,
+.nav-link.active {
+    background: #29294a;
+    color: white;
+}
+
+/* MAIN */
+
+.main {
+    flex: 1;
+    min-width: 0;
+    padding: 30px;
+}
+
+.container {
+    max-width: 1300px;
+    margin: auto;
+}
+
+/* HERO */
+
+.hero {
+    background: linear-gradient(135deg, #17172b, #4a3c9e);
+    color: white;
+    border-radius: 25px;
+    padding: 35px;
+    margin-bottom: 25px;
+}
+
+.hero small {
+    color: #c7c1ff;
+    letter-spacing: 1px;
+    font-weight: bold;
+}
+
+.hero h1 {
+    margin-top: 10px;
+    font-size: 38px;
+}
+
+.hero h1 span {
+    color: #b5a8ff;
+}
+
+.hero p {
+    margin-top: 10px;
+    color: #ddd8ff;
+}
+
+.clock {
+    display: inline-block;
+    margin-top: 22px;
+    padding: 12px 20px;
+    background: rgba(255,255,255,.12);
+    border-radius: 12px;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+/* GRID */
+
+.attendance-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 25px;
+}
+
+/* CARD */
+
+.card {
+    background: white;
+    border-radius: 24px;
+    padding: 30px;
+    border: 1px solid #e6e6ee;
+}
+
+/* TIMER */
+
+.timer-card {
+    text-align: center;
+    min-height: 470px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.status {
+    padding: 8px 16px;
+    background: #eeeeF3;
+    color: #777;
+    border-radius: 30px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.status.working {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+.status.break {
+    background: #fef3c7;
+    color: #a16207;
+}
+
+.status.completed {
+    background: #e7e5ff;
+    color: #635bff;
+}
+
+.circle {
+    width: 250px;
+    height: 250px;
+    border-radius: 50%;
+    background: conic-gradient(
+        #635bff 0deg,
+        #8b5cf6 0deg,
+        #ececff 0deg
+    );
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    margin: 25px 0;
+}
+
+.circle-inner {
+    width: 220px;
+    height: 220px;
+    background: white;
+    border-radius: 50%;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.circle-inner small {
+    color: #888;
+    font-weight: bold;
+}
+
+.circle-inner h2 {
+    margin-top: 10px;
+    font-family: monospace;
+    font-size: 34px;
+}
+
+.buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+button {
+    border: none;
+    padding: 13px 18px;
+    border-radius: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: .25s;
+}
+
+button:hover:not(:disabled) {
+    transform: translateY(-2px);
+}
+
+button:disabled {
+    opacity: .45;
+    cursor: not-allowed;
+}
+
+.checkin {
+    background: linear-gradient(135deg, #635bff, #8b5cf6);
+    color: white;
+}
+
+.break-btn {
+    background: #f59e0b;
+    color: white;
+}
+
+.checkout {
+    background: #ef4444;
+    color: white;
+}
+
+/* STATS */
+
+.stats {
+    display: grid;
+    gap: 18px;
+}
+
+.stat-card {
+    min-height: 140px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.stat-card small {
+    color: #888;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.stat-card h2 {
+    margin-top: 12px;
+    font-size: 27px;
+}
+
+/* PROGRESS */
+
+.progress-card {
+    margin-top: 25px;
+}
+
+.progress-head {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+
+.progress-bar {
+    height: 12px;
+    background: #ececff;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(90deg, #635bff, #a855f7);
+    border-radius: 20px;
+    transition: .5s;
+}
+
+/* HISTORY */
+
+.history {
+    margin-top: 25px;
+}
+
+.history h2 {
+    margin-bottom: 20px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    text-align: left;
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+th {
+    color: #888;
+    font-size: 11px;
+}
+
+/* RESPONSIVE */
+
+@media(max-width: 950px) {
+
+    .attendance-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .sidebar {
+        width: 200px;
+    }
+}
+
+@media(max-width: 700px) {
+
+    .app {
+        display: block;
+    }
+
+    .sidebar {
+        width: 100%;
+        min-height: auto;
+    }
+
+    .main {
+        padding: 15px;
+    }
+
+    .hero {
+        padding: 25px;
+    }
+
+    .hero h1 {
+        font-size: 28px;
+    }
+
+    .circle {
+        width: 220px;
+        height: 220px;
+    }
+
+    .circle-inner {
+        width: 195px;
+        height: 195px;
+    }
+}
+</style>
 </head>
 
 <body>
 
-<div class="app-shell">
+<div class="app">
 
-    <aside class="sidebar">
+<aside class="sidebar">
 
-        <div class="sidebar-logo">
-            <div class="brand-mark small">D</div>
+    <div class="logo">
+        <div class="logo-icon">D</div>
 
-            <div>
-                <strong>Dayflow</strong>
-                <span>EMPLOYEE PORTAL</span>
-            </div>
+        <div>
+            <h2>Dayflow</h2>
+            <p>EMPLOYEE PORTAL</p>
         </div>
+    </div>
 
-        <div class="nav-section">
+    <p class="menu-title">WORKSPACE</p>
 
-            <p class="nav-label">WORKSPACE</p>
+    <a href="index.html" class="nav-link">⌂ My Dayflow</a>
+    <a href="attendance.html" class="nav-link active">◷ Attendance</a>
+    <a href="workflow.html" class="nav-link">◫ Workflow</a>
+    <a href="leave.html" class="nav-link">☷ Leave</a>
+    <a href="payroll.html" class="nav-link">₹ Payroll</a>
 
-            <a href="index.html" class="nav-link">
-                <span>⌂</span>
-                <span>My Dayflow</span>
-            </a>
+    <p class="menu-title">PERSONAL</p>
 
-            <a href="attendance.html" class="nav-link active">
-                <span>◷</span>
-                <span>Attendance</span>
-            </a>
+    <a href="profile.html" class="nav-link">◉ My Profile</a>
 
-            <a href="index.html#workflow" class="nav-link">
-                <span>◫</span>
-                <span>Workflow</span>
-            </a>
-
-        </div>
-
-        <div class="nav-section">
-
-            <p class="nav-label">PERSONAL</p>
-
-            <a href="profile.html" class="nav-link">
-                <span>◉</span>
-                <span>My Profile</span>
-            </a>
-
-        </div>
-
+    <div style="margin-top:auto;padding:20px 14px 10px;">
+        <button id="logoutBtn" style="width:100%;background:#29294a;color:#b7b7c8;border:none;padding:10px;border-radius:10px;cursor:pointer;font-size:12px;">Sign out</button>
     </aside>
 
 
-    <main class="dashboard-main">
+<main class="main">
 
-        <header class="topbar">
+<div class="container">
 
-            <div>
-                <span class="section-kicker">WORKDAY TRACKER</span>
-                <h1>My <span>Attendance</span></h1>
-                <p>Track your workday in real time.</p>
-            </div>
+<section class="hero">
 
-            <div class="user-menu">
-                <div class="user-avatar">JD</div>
+    <small>DAYFLOW ATTENDANCE</small>
 
-                <div>
-                    <strong>John Doe</strong>
-                    <span>Software Engineer</span>
-                </div>
-            </div>
+    <h1>
+        Your time has a
+        <span>flow.</span>
+    </h1>
 
-        </header>
+    <p>
+        Track your workday, manage breaks and maintain a healthy rhythm.
+    </p>
 
+    <div class="clock" id="liveClock">
+        --:--:--
+    </div>
 
-        <section class="attendance-hero">
-
-            <div class="attendance-header">
-
-                <div>
-                    <span class="section-kicker">LIVE WORKDAY</span>
-                    <h2>Your day is in <span>flow.</span></h2>
-                </div>
-
-                <div class="live-badge">
-                    ● WORKING
-                </div>
-
-            </div>
+</section>
 
 
-            <div class="timer-box">
+<section class="attendance-grid">
 
-                <span>TODAY'S WORK TIME</span>
+<div class="card timer-card">
 
-                <h1 id="timer">04:38:20</h1>
+    <div class="status" id="attendanceStatus">
+        READY TO START
+    </div>
 
-                <p>Keep the momentum going 🚀</p>
+    <div class="circle" id="timerCircle">
 
-            </div>
+        <div class="circle-inner">
 
+            <small>WORKED TODAY</small>
 
-            <div class="attendance-steps">
+            <h2 id="workTimer">
+                00:00:00
+            </h2>
 
-                <div class="step completed">
-                    <div>✓</div>
-                    <strong>Check In</strong>
-                    <span>09:12 AM</span>
-                </div>
+        </div>
 
-                <div class="step active">
-                    <div>●</div>
-                    <strong>Working</strong>
-                    <span>In Progress</span>
-                </div>
+    </div>
 
-                <div class="step">
-                    <div>○</div>
-                    <strong>Check Out</strong>
-                    <span id="checkoutTime">--</span>
-                </div>
+    <div class="buttons">
 
-            </div>
+        <button class="checkin" id="checkInBtn">
+            ▶ Check In
+        </button>
 
+        <button class="break-btn" id="breakBtn" disabled>
+            ☕ Start Break
+        </button>
 
-            <button id="checkOutBtn" class="checkout-btn">
-                Check Out →
-            </button>
+        <button class="checkout" id="checkOutBtn" disabled>
+            ■ Check Out
+        </button>
 
-        </section>
-
-
-        <section class="stats-grid">
-
-            <div class="stat-card">
-                <span>PRESENT DAYS</span>
-                <h2>22</h2>
-                <p>+8% from last month</p>
-            </div>
-
-            <div class="stat-card">
-                <span>AVG WORK HOURS</span>
-                <h2>8.2h</h2>
-                <p>This month's average</p>
-            </div>
-
-            <div class="stat-card">
-                <span>ATTENDANCE RATE</span>
-                <h2>88%</h2>
-                <p>Excellent consistency</p>
-            </div>
-
-        </section>
-
-
-        <section class="content-card">
-
-            <span class="section-kicker">ATTENDANCE HISTORY</span>
-            <h2>Recent workdays</h2>
-
-            <div class="history-row">
-                <strong>Today</strong>
-                <span>09:12 AM</span>
-                <span id="todayCheckout">--</span>
-                <span id="todayHours">04h 38m</span>
-                <b class="working-badge">Working</b>
-            </div>
-
-            <div class="history-row">
-                <strong>Yesterday</strong>
-                <span>09:05 AM</span>
-                <span>06:02 PM</span>
-                <span>08h 57m</span>
-                <b class="present-badge">Present</b>
-            </div>
-
-            <div class="history-row">
-                <strong>Wednesday</strong>
-                <span>09:18 AM</span>
-                <span>06:10 PM</span>
-                <span>08h 52m</span>
-                <b class="present-badge">Present</b>
-            </div>
-
-        </section>
-
-    </main>
+    </div>
 
 </div>
 
+
+<div class="stats">
+
+    <div class="card stat-card">
+
+        <small>CHECK IN TIME</small>
+
+        <h2 id="checkInTime">
+            --:--
+        </h2>
+
+    </div>
+
+
+    <div class="card stat-card">
+
+        <small>BREAK TIME</small>
+
+        <h2 id="breakTime">
+            00:00:00
+        </h2>
+
+    </div>
+
+
+    <div class="card stat-card">
+
+        <small>WORK STATUS</small>
+
+        <h2 id="workStatus">
+            Not Started
+        </h2>
+
+    </div>
+
+</div>
+
+</section>
+
+
+<section class="card progress-card">
+
+    <div class="progress-head">
+
+        <strong>Today's Work Progress</strong>
+
+        <strong id="progressText">
+            0%
+        </strong>
+
+    </div>
+
+    <div class="progress-bar">
+
+        <div class="progress-fill" id="progressFill"></div>
+
+    </div>
+
+    <p style="margin-top:15px;color:#888;font-size:13px;">
+        Goal: 8 hours of productive work.
+    </p>
+
+</section>
+
+
+<section class="card history">
+
+    <h2>Today's Timeline</h2>
+
+    <table>
+
+        <thead>
+
+            <tr>
+                <th>ACTIVITY</th>
+                <th>TIME</th>
+                <th>STATUS</th>
+            </tr>
+
+        </thead>
+
+        <tbody id="attendanceHistory">
+
+            <tr>
+                <td colspan="3" style="text-align:center;color:#888;">
+                    Your activity will appear here.
+                </td>
+            </tr>
+
+        </tbody>
+
+    </table>
+
+</section>
+
+</div>
+
+</main>
+
+</div>
+
+<script src="js/api.js"></script>
 <script src="js/attendance.js"></script>
 
 </body>

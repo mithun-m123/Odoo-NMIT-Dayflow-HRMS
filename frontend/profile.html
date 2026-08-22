@@ -1,239 +1,548 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Dayflow Profile</title>
+<title>Dayflow | My Profile</title>
 
-    <link rel="stylesheet" href="css/style.css">
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:Arial,sans-serif;
+    background:#f5f6fa;
+    color:#202030;
+}
+
+.app{
+    display:flex;
+    min-height:100vh;
+}
+
+/* SIDEBAR */
+
+.sidebar{
+    width:240px;
+    background:#17172b;
+    color:white;
+    padding:25px 15px;
+    flex-shrink:0;
+}
+
+.logo{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:40px;
+    padding:0 10px;
+}
+
+.logo-icon{
+    width:42px;
+    height:42px;
+    background:linear-gradient(135deg,#635bff,#a855f7);
+    border-radius:12px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:20px;
+    font-weight:bold;
+}
+
+.logo h2{
+    font-size:22px;
+}
+
+.logo p{
+    font-size:9px;
+    color:#aaa;
+    letter-spacing:1px;
+}
+
+.menu-title{
+    color:#777;
+    font-size:10px;
+    margin:25px 12px 10px;
+    letter-spacing:1px;
+}
+
+.nav-link{
+    display:block;
+    color:#b7b7c8;
+    text-decoration:none;
+    padding:13px 14px;
+    margin:5px 0;
+    border-radius:12px;
+    transition:.3s;
+}
+
+.nav-link:hover,
+.nav-link.active{
+    background:#29294a;
+    color:white;
+}
+
+/* MAIN */
+
+.main{
+    flex:1;
+    padding:30px;
+}
+
+.container{
+    max-width:1200px;
+    margin:auto;
+}
+
+/* PROFILE HERO */
+
+.profile-hero{
+    background:linear-gradient(135deg,#17172b,#493b9c);
+    color:white;
+    padding:35px;
+    border-radius:25px;
+    display:flex;
+    align-items:center;
+    gap:25px;
+    margin-bottom:25px;
+}
+
+.avatar{
+    width:90px;
+    height:90px;
+    border-radius:50%;
+    background:linear-gradient(135deg,#8b5cf6,#ec4899);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:35px;
+    font-weight:bold;
+    flex-shrink:0;
+}
+
+.profile-hero p{
+    color:#d7d3ff;
+    margin-top:8px;
+}
+
+.profile-grid{
+    display:grid;
+    grid-template-columns:1.4fr .8fr;
+    gap:25px;
+}
+
+.card{
+    background:white;
+    border:1px solid #e7e7ee;
+    border-radius:22px;
+    padding:28px;
+}
+
+.card h2{
+    margin-bottom:25px;
+}
+
+/* FORM */
+
+.form-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:20px;
+}
+
+.form-group{
+    display:flex;
+    flex-direction:column;
+}
+
+.form-group.full{
+    grid-column:1/-1;
+}
+
+label{
+    font-size:12px;
+    font-weight:bold;
+    color:#777;
+    margin-bottom:8px;
+}
+
+input,
+select{
+    padding:13px;
+    border:1px solid #ddd;
+    border-radius:10px;
+    font-size:14px;
+    outline:none;
+}
+
+input:focus{
+    border-color:#635bff;
+}
+
+.save-btn{
+    margin-top:25px;
+    background:linear-gradient(135deg,#635bff,#8b5cf6);
+    color:white;
+    border:none;
+    padding:14px 25px;
+    border-radius:12px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+/* SIDE INFO */
+
+.info-item{
+    padding:18px 0;
+    border-bottom:1px solid #eee;
+}
+
+.info-item:last-child{
+    border:none;
+}
+
+.info-item small{
+    color:#888;
+    display:block;
+}
+
+.info-item strong{
+    margin-top:6px;
+    display:block;
+}
+
+/* TOAST */
+
+.toast{
+    position:fixed;
+    bottom:25px;
+    right:25px;
+    background:#17172b;
+    color:white;
+    padding:15px 22px;
+    border-radius:12px;
+    transform:translateY(100px);
+    opacity:0;
+    transition:.3s;
+}
+
+.toast.show{
+    transform:translateY(0);
+    opacity:1;
+}
+
+@media(max-width:900px){
+
+    .profile-grid{
+        grid-template-columns:1fr;
+    }
+
+}
+
+@media(max-width:700px){
+
+    .app{
+        display:block;
+    }
+
+    .sidebar{
+        width:100%;
+    }
+
+    .main{
+        padding:15px;
+    }
+
+    .profile-hero{
+        flex-direction:column;
+        text-align:center;
+    }
+
+    .form-grid{
+        grid-template-columns:1fr;
+    }
+
+    .form-group.full{
+        grid-column:auto;
+    }
+
+}
+
+</style>
 </head>
 
 <body>
 
-<div class="app-shell">
+<div class="app">
 
-    <aside class="sidebar">
+<aside class="sidebar">
 
-        <div class="sidebar-logo">
-            <div class="brand-mark small">D</div>
+    <div class="logo">
 
-            <div>
-                <strong>Dayflow</strong>
-                <span>EMPLOYEE PORTAL</span>
-            </div>
+        <div class="logo-icon">D</div>
+
+        <div>
+            <h2>Dayflow</h2>
+            <p>EMPLOYEE PORTAL</p>
         </div>
-
-        <div class="nav-section">
-
-            <p class="nav-label">WORKSPACE</p>
-
-            <a href="index.html" class="nav-link">
-                <span>⌂</span>
-                <span>My Dayflow</span>
-            </a>
-
-            <a href="attendance.html" class="nav-link">
-                <span>◷</span>
-                <span>Attendance</span>
-            </a>
-
-            <a href="index.html#workflow" class="nav-link">
-                <span>◫</span>
-                <span>Workflow</span>
-            </a>
-
-        </div>
-
-        <div class="nav-section">
-
-            <p class="nav-label">PERSONAL</p>
-
-            <a href="profile.html" class="nav-link active">
-                <span>◉</span>
-                <span>My Profile</span>
-            </a>
-
-        </div>
-
-    </aside>
-
-
-    <main class="dashboard-main">
-
-        <header class="topbar">
-
-            <div>
-                <span class="section-kicker">PERSONAL SPACE</span>
-                <h1>My <span>Profile</span></h1>
-                <p>Manage your personal and work information.</p>
-            </div>
-
-            <div class="user-menu">
-                <div class="user-avatar">JD</div>
-
-                <div>
-                    <strong>John Doe</strong>
-                    <span>Software Engineer</span>
-                </div>
-            </div>
-
-        </header>
-
-
-        <section class="profile-hero">
-
-            <div class="large-avatar">JD</div>
-
-            <div>
-                <span class="section-kicker">EMPLOYEE PROFILE</span>
-                <h2>John Doe</h2>
-                <p>Software Engineer · Engineering Department</p>
-
-                <div class="profile-badges">
-                    <span>● Active Employee</span>
-                    <span>EMP-2026-0142</span>
-                </div>
-            </div>
-
-            <button class="primary-btn edit-btn" id="editBtn">
-                Edit Profile
-            </button>
-
-        </section>
-
-
-        <section class="profile-health">
-
-            <div>
-                <span class="section-kicker">PROFILE HEALTH</span>
-                <h2>Your profile is <span>85% complete</span></h2>
-                <p>Keep your information updated for a better HR experience.</p>
-            </div>
-
-            <div class="percentage">85%</div>
-
-        </section>
-
-
-        <div class="profile-grid">
-
-            <section class="content-card">
-
-                <span class="section-kicker">PERSONAL INFORMATION</span>
-                <h2>Your details</h2>
-
-                <div class="detail">
-                    <span>FULL NAME</span>
-                    <strong>John Doe</strong>
-                </div>
-
-                <div class="detail">
-                    <span>EMAIL ADDRESS</span>
-                    <strong>john@dayflow.com</strong>
-                </div>
-
-                <div class="detail">
-                    <span>PHONE NUMBER</span>
-                    <strong>+91 98765 43210</strong>
-                </div>
-
-                <div class="detail">
-                    <span>LOCATION</span>
-                    <strong>Bengaluru, Karnataka</strong>
-                </div>
-
-            </section>
-
-
-            <section class="content-card">
-
-                <span class="section-kicker">WORK INFORMATION</span>
-                <h2>Your workplace</h2>
-
-                <div class="detail">
-                    <span>DEPARTMENT</span>
-                    <strong>Engineering</strong>
-                </div>
-
-                <div class="detail">
-                    <span>DESIGNATION</span>
-                    <strong>Software Engineer</strong>
-                </div>
-
-                <div class="detail">
-                    <span>JOINING DATE</span>
-                    <strong>15 January 2025</strong>
-                </div>
-
-                <div class="detail">
-                    <span>EMPLOYEE ID</span>
-                    <strong>EMP-2026-0142</strong>
-                </div>
-
-            </section>
-
-        </div>
-
-    </main>
-
-</div>
-
-
-<div class="modal hidden" id="profileModal">
-
-    <div class="modal-content">
-
-        <button class="close-btn" id="closeBtn">×</button>
-
-        <span class="section-kicker">UPDATE PROFILE</span>
-
-        <h2>Edit Profile</h2>
-
-        <form id="profileForm">
-
-            <label>Full Name</label>
-            <input type="text" value="John Doe">
-
-            <label>Email</label>
-            <input type="email" value="john@dayflow.com">
-
-            <label>Phone</label>
-            <input type="text" value="+91 98765 43210">
-
-            <button type="submit" class="primary-btn">
-                Save Changes
-            </button>
-
-        </form>
 
     </div>
 
+    <p class="menu-title">WORKSPACE</p>
+
+    <a href="index.html" class="nav-link">⌂ My Dayflow</a>
+    <a href="attendance.html" class="nav-link">◷ Attendance</a>
+    <a href="workflow.html" class="nav-link">◫ Workflow</a>
+    <a href="leave.html" class="nav-link">☷ Leave</a>
+    <a href="payroll.html" class="nav-link">₹ Payroll</a>
+
+    <p class="menu-title">PERSONAL</p>
+
+    <a href="profile.html" class="nav-link active">
+        ◉ My Profile
+    </a>
+
+<!-- Add logout button to sidebar bottom -->
+<p class="menu-title">ACCOUNT</p>
+<a href="#" class="nav-link" id="logoutBtn">✕ Sign Out</a>
+
+</aside>
+
+
+<main class="main">
+
+<div class="container">
+
+<section class="profile-hero">
+
+    <div class="avatar" id="avatar">
+        U
+    </div>
+
+    <div>
+
+        <h1 id="profileName">
+            Employee
+        </h1>
+
+        <p id="profileRole">
+            Dayflow Team Member
+        </p>
+
+        <p>
+            Manage your personal and professional information.
+        </p>
+
+    </div>
+
+</section>
+
+
+<div class="profile-grid">
+
+<!-- EDIT PROFILE -->
+
+<section class="card">
+
+<h2>Personal Information</h2>
+
+<div class="form-grid">
+
+<div class="form-group">
+
+<label>FULL NAME</label>
+
+<input
+type="text"
+id="fullName"
+placeholder="Enter your name">
+
 </div>
 
 
-<script>
+<div class="form-group">
 
-const editBtn = document.getElementById("editBtn");
-const profileModal = document.getElementById("profileModal");
-const closeBtn = document.getElementById("closeBtn");
+<label>EMAIL ADDRESS</label>
 
-editBtn.onclick = function () {
-    profileModal.classList.remove("hidden");
-};
+<input
+type="email"
+id="email"
+placeholder="Enter your email">
 
-closeBtn.onclick = function () {
-    profileModal.classList.add("hidden");
-};
+</div>
 
-document.getElementById("profileForm").onsubmit = function(e) {
-    e.preventDefault();
-    alert("Profile updated successfully!");
-    profileModal.classList.add("hidden");
-};
 
-</script>
+<div class="form-group">
+
+<label>PHONE NUMBER</label>
+
+<input
+type="text"
+id="phone"
+placeholder="Enter phone number">
+
+</div>
+
+
+<div class="form-group">
+
+<label>DEPARTMENT</label>
+
+<select id="department">
+
+<option value="Engineering">
+Engineering
+</option>
+
+<option value="Human Resources">
+Human Resources
+</option>
+
+<option value="Design">
+Design
+</option>
+
+<option value="Management">
+Management
+</option>
+
+</select>
+
+</div>
+
+
+<div class="form-group full">
+
+<label>EMPLOYEE ID</label>
+
+<input
+type="text"
+id="employeeId"
+placeholder="Employee ID"
+readonly
+style="background:#f5f6fa;cursor:not-allowed;">
+
+</div>
+
+<div class="form-group full">
+
+<label>ADDRESS</label>
+
+<input
+type="text"
+id="address"
+placeholder="Enter your address">
+
+</div>
+
+</div>
+
+
+<button
+class="save-btn"
+id="saveProfile">
+
+Save Changes
+
+</button>
+
+</section>
+
+
+<!-- EMPLOYEE DETAILS -->
+
+<section class="card">
+
+<h2>Work Identity</h2>
+
+<div class="info-item">
+
+<small>EMPLOYEE ID</small>
+
+<strong id="displayEmployeeId">
+DF-001
+</strong>
+
+</div>
+
+
+<div class="info-item">
+
+<small>DEPARTMENT</small>
+
+<strong id="displayDepartment">
+Engineering
+</strong>
+
+</div>
+
+
+<div class="info-item">
+
+<small>DESIGNATION</small>
+
+<strong id="displayDesignation">
+—
+</strong>
+
+</div>
+
+
+<div class="info-item">
+
+<small>DATE OF JOINING</small>
+
+<strong id="displayJoining">
+—
+</strong>
+
+</div>
+
+
+<div class="info-item">
+
+<small>ACCOUNT STATUS</small>
+
+<strong style="color:#16a34a;">
+● Active
+</strong>
+
+</div>
+
+
+<div class="info-item">
+
+<small>DAYFLOW SCORE</small>
+
+<strong style="font-size:28px;color:#635bff;">
+92 / 100
+</strong>
+
+</div>
+
+</section>
+
+</div>
+
+</div>
+
+</main>
+
+</div>
+
+
+<div class="toast" id="toast">
+Profile updated successfully!
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/profile.js"></script>
 
 </body>
 </html>
