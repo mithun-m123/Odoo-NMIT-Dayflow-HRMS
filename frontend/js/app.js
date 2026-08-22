@@ -4,15 +4,37 @@ const dashboard = document.getElementById("dashboard");
 const loginForm = document.getElementById("loginForm");
 const logoutBtn = document.getElementById("logoutBtn");
 
+const currentDate = document.getElementById("currentDate");
+const dashboardCheckOut = document.getElementById("dashboardCheckOut");
+const workHours = document.getElementById("workHours");
 
-loginForm.addEventListener("submit", function(event) {
+
+/* SHOW CURRENT DATE */
+
+const today = new Date();
+
+const options = {
+    weekday: "long",
+    day: "numeric",
+    month: "long"
+};
+
+if (currentDate) {
+    currentDate.textContent =
+        today.toLocaleDateString("en-US", options).toUpperCase();
+}
+
+
+/* LOGIN */
+
+loginForm.addEventListener("submit", function (event) {
 
     event.preventDefault();
 
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value.trim();
 
-    if (email === "" || password === "") {
+    if (!email || !password) {
         alert("Please enter your login details.");
         return;
     }
@@ -23,7 +45,9 @@ loginForm.addEventListener("submit", function(event) {
 });
 
 
-logoutBtn.addEventListener("click", function() {
+/* LOGOUT */
+
+logoutBtn.addEventListener("click", function () {
 
     dashboard.classList.add("hidden");
     loginPage.classList.remove("hidden");
@@ -31,3 +55,23 @@ logoutBtn.addEventListener("click", function() {
     loginForm.reset();
 
 });
+
+
+/* DASHBOARD CHECK OUT */
+
+if (dashboardCheckOut) {
+
+    dashboardCheckOut.addEventListener("click", function () {
+
+        dashboardCheckOut.innerHTML =
+            "✓ Checked Out";
+
+        dashboardCheckOut.style.background = "#28b779";
+
+        if (workHours) {
+            workHours.textContent = "08h 00m";
+        }
+
+    });
+
+}
