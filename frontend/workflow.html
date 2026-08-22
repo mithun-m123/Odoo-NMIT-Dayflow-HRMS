@@ -3,9 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Dayflow | Workflow</title>
-
     <link rel="stylesheet" href="css/style.css">
 </head>
 
@@ -14,153 +12,88 @@
 <div class="app-shell">
 
     <aside class="sidebar">
-
         <div class="sidebar-logo">
             <div class="brand-mark small">D</div>
-
-            <div>
-                <strong>Dayflow</strong>
-                <span>EMPLOYEE PORTAL</span>
-            </div>
+            <div><strong>Dayflow</strong><span>EMPLOYEE PORTAL</span></div>
         </div>
 
         <div class="nav-section">
-
             <p class="nav-label">WORKSPACE</p>
-
-            <a href="index.html" class="nav-link">
-                <span>⌂</span>
-                <span>My Dayflow</span>
-            </a>
-
-            <a href="attendance.html" class="nav-link">
-                <span>◷</span>
-                <span>Attendance</span>
-            </a>
-
-            <a href="workflow.html" class="nav-link active">
-                <span>◫</span>
-                <span>Workflow</span>
-            </a>
-
-            <a href="leave.html" class="nav-link">
-                <span>☷</span>
-                <span>Leave</span>
-            </a>
-
+            <a href="index.html" class="nav-link"><span>⌂</span><span>My Dayflow</span></a>
+            <a href="attendance.html" class="nav-link"><span>◷</span><span>Attendance</span></a>
+            <a href="workflow.html" class="nav-link active"><span>◫</span><span>Workflow</span></a>
+            <a href="leave.html" class="nav-link"><span>☷</span><span>Leave</span></a>
+            <a href="payroll.html" class="nav-link"><span>₹</span><span>Payroll</span></a>
         </div>
 
         <div class="nav-section">
-
             <p class="nav-label">PERSONAL</p>
-
-            <a href="profile.html" class="nav-link">
-                <span>◉</span>
-                <span>My Profile</span>
-            </a>
-
+            <a href="profile.html" class="nav-link"><span>◉</span><span>My Profile</span></a>
         </div>
-
     </aside>
-
 
     <main class="dashboard-main">
 
         <header class="topbar">
-
             <div>
-
-                <span class="section-kicker">
-                    WORKFLOW
-                </span>
-
-                <h1>
-                    Your work,
-                    <span>in flow.</span>
-                </h1>
-
-                <p>
-                    Track requests and workplace activities from one place.
-                </p>
-
+                <span class="section-kicker">WORKFLOW HUB</span>
+                <h1>Your work, <span>in flow.</span></h1>
+                <p>Track your employee requests and important HR activities.</p>
             </div>
-
-            <div class="user-menu">
-
-                <div class="user-avatar">
-                    JD
-                </div>
-
-                <div>
-                    <strong>John Doe</strong>
-                    <span>Software Engineer</span>
-                </div>
-
-            </div>
-
         </header>
 
-
-        <section class="content-card">
-
-            <span class="section-kicker">
-                WORKFLOW CENTER
-            </span>
-
-            <h2>Employee Workflow</h2>
-
-            <p>
-                Manage your HR requests and track their progress.
-            </p>
-
-            <div class="quick-grid">
-
-                <a href="leave.html" class="quick-card">
-
-                    <div>☷</div>
-
-                    <strong>Leave Request</strong>
-
-                    <span>Apply and track leave →</span>
-
-                </a>
-
-
-                <a href="attendance.html" class="quick-card">
-
-                    <div>◷</div>
-
-                    <strong>Attendance</strong>
-
-                    <span>View attendance →</span>
-
-                </a>
-
-
-                <a href="profile.html" class="quick-card">
-
-                    <div>◉</div>
-
-                    <strong>My Profile</strong>
-
-                    <span>View employee details →</span>
-
-                </a>
-
-
-                <div class="quick-card">
-
-                    <div>₹</div>
-
-                    <strong>Payroll</strong>
-
-                    <span>Coming soon</span>
-
-                </div>
-
+        <section class="hero-dashboard">
+            <div>
+                <span class="section-kicker" style="color:#bdb6ff;">FLOW STATUS</span>
+                <h2>Everything is moving smoothly.</h2>
+                <p>You have one active leave request and your latest payroll is ready.</p>
             </div>
 
+            <div class="dayflow-score">
+                <strong>4</strong>
+                <span>ACTIVE FLOWS</span>
+            </div>
         </section>
+
+        <div class="workflow-timeline">
+
+            <div class="workflow-item">
+                <div class="workflow-step">01</div>
+                <div>
+                    <strong>Attendance Check-in</strong>
+                    <p style="font-size:12px;color:var(--muted);margin-top:4px;">Start and track your workday.</p>
+                </div>
+                <a href="attendance.html" class="primary-btn">Open</a>
+            </div>
+
+            <div class="workflow-item">
+                <div class="workflow-step">02</div>
+                <div>
+                    <strong>Leave Request</strong>
+                    <p style="font-size:12px;color:var(--muted);margin-top:4px;">Submit and track time-off requests.</p>
+                </div>
+                <a href="leave.html" class="primary-btn">Open</a>
+            </div>
+
+            <div class="workflow-item">
+                <div class="workflow-step">03</div>
+                <div>
+                    <strong>Payroll Review</strong>
+                    <p style="font-size:12px;color:var(--muted);margin-top:4px;">View salary and download payslips.</p>
+                </div>
+                <a href="payroll.html" class="primary-btn">Open</a>
+            </div>
+
+            <div class="workflow-item">
+                <div class="workflow-step">04</div>
+                <div>
+                    <strong>Employee Profile</strong>
+                    <p style="font-size:12px;color:var(--muted);margin-top:4px;">Keep your information up to date.</p>
+                </div>
+                <a href="profile.html" class="primary-btn">Open</a>
+            </div>
+
+        </div>
 
     </main>
 

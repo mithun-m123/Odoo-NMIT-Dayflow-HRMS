@@ -3,138 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dayflow Login</title>
+    <title>Dayflow | Sign In</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 
-<body class="login-page">
+<body>
 
-<div class="login-container">
+<div class="login-page">
 
-    <div class="login-brand">
-        <div class="brand-mark">D</div>
-        <h1>Dayflow</h1>
-        <p>Human Resource Management System</p>
-    </div>
+    <section class="login-brand">
+        <div class="brand">
+            <div class="brand-mark">D</div>
+            Dayflow
+        </div>
 
-    <div class="login-card">
-        <span class="section-kicker">WELCOME BACK</span>
-        <h2>Sign in to Dayflow</h2>
+        <div class="brand-copy">
+            <h1>Work feels better <span>in flow.</span></h1>
+            <p>
+                A modern employee experience that brings attendance,
+                leave, payroll and workflow into one intelligent space.
+            </p>
+        </div>
 
-        <form id="loginForm">
+        <div class="login-stats">
+            <div>
+                <strong>01</strong>
+                <span>One workspace</span>
+            </div>
+            <div>
+                <strong>24/7</strong>
+                <span>Employee access</span>
+            </div>
+        </div>
+    </section>
 
-            <label for="email">Email Address</label>
-            <input
-                type="email"
-                id="email"
-                placeholder="john@dayflow.com"
-                required
-            >
+    <section class="login-form-area">
+        <div class="login-card">
 
-            <label for="password">Password</label>
-            <input
-                type="password"
-                id="password"
-                placeholder="Enter password"
-                required
-            >
+            <span class="section-kicker">WELCOME BACK</span>
+            <h2>Sign in to Dayflow</h2>
+            <p>Start your workday with clarity.</p>
 
-            <button type="submit" class="primary-btn" id="loginButton">
-                Enter Dayflow →
-            </button>
+            <form id="loginForm">
 
-        </form>
+                <div class="input-group">
+                    <label>Email Address</label>
+                    <input type="email" id="email" placeholder="employee@dayflow.com" required>
+                </div>
 
-        <p class="demo-text">
-            Sign in using your Dayflow employee credentials.
-        </p>
-    </div>
+                <div class="input-group">
+                    <label>Password</label>
+                    <input type="password" id="password" placeholder="Enter password" required>
+                </div>
+
+                <button class="primary-btn full-btn" type="submit">
+                    Enter Dayflow →
+                </button>
+
+            </form>
+
+            <div class="demo-box">
+                Demo: employee@dayflow.com / Password!123
+            </div>
+
+        </div>
+    </section>
 
 </div>
 
-<script>
-const API_BASE_URL = "http://localhost:5000/v1";
-
-const loginForm = document.getElementById("loginForm");
-const loginButton = document.getElementById("loginButton");
-
-loginForm.addEventListener("submit", async (event) => {
-    event.preventDefault();
-
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value;
-
-    if (!email || !password) {
-        alert("Please enter your email and password.");
-        return;
-    }
-
-    loginButton.disabled = true;
-    loginButton.textContent = "Signing in...";
-
-    try {
-        const response = await fetch(`${API_BASE_URL}/auth/login`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                email: email,
-                password: password
-            })
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-            throw new Error(
-                data.message || "Invalid email or password."
-            );
-        }
-
-        /*
-         * Store authentication tokens returned by the backend.
-         */
-        if (data.accessToken) {
-            localStorage.setItem("accessToken", data.accessToken);
-        }
-
-        if (data.refreshToken) {
-            localStorage.setItem("refreshToken", data.refreshToken);
-        }
-
-        /*
-         * Store employee/user information if returned
-         * by the backend.
-         */
-        if (data.user) {
-            localStorage.setItem(
-                "currentUser",
-                JSON.stringify(data.user)
-            );
-        }
-
-        /*
-         * Login successful.
-         */
-        window.location.href = "index.html";
-
-    } catch (error) {
-
-        console.error("Login error:", error);
-
-        alert(
-            error.message ||
-            "Unable to connect to the Dayflow server."
-        );
-
-    } finally {
-
-        loginButton.disabled = false;
-        loginButton.textContent = "Enter Dayflow →";
-    }
-});
-</script>
+<script src="js/login.js"></script>
 
 </body>
 </html>

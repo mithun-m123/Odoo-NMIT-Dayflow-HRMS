@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dayflow | Payroll</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+<div class="app-shell">
+
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <div class="brand-mark small">D</div>
+            <div><strong>Dayflow</strong><span>EMPLOYEE PORTAL</span></div>
+        </div>
+
+        <div class="nav-section">
+            <p class="nav-label">WORKSPACE</p>
+            <a href="index.html" class="nav-link"><span>⌂</span><span>My Dayflow</span></a>
+            <a href="attendance.html" class="nav-link"><span>◷</span><span>Attendance</span></a>
+            <a href="workflow.html" class="nav-link"><span>◫</span><span>Workflow</span></a>
+            <a href="leave.html" class="nav-link"><span>☷</span><span>Leave</span></a>
+            <a href="payroll.html" class="nav-link active"><span>₹</span><span>Payroll</span></a>
+        </div>
+
+        <div class="nav-section">
+            <p class="nav-label">PERSONAL</p>
+            <a href="profile.html" class="nav-link"><span>◉</span><span>My Profile</span></a>
+        </div>
+    </aside>
+
+    <main class="dashboard-main">
+
+        <header class="topbar">
+            <div>
+                <span class="section-kicker">PAYROLL CENTER</span>
+                <h1>Your salary, <span>made clear.</span></h1>
+                <p>Track earnings, deductions and payslips in one place.</p>
+            </div>
+        </header>
+
+        <section class="salary-hero">
+
+            <div>
+                <span class="section-kicker" style="color:#c6c0ff;">AUGUST 2026 • NET PAY</span>
+                <h2>₹72,500</h2>
+                <p>Your salary has been successfully processed.</p>
+
+                <button class="primary-btn" id="downloadPayslip" style="margin-top:20px;">
+                    ↓ Download Payslip
+                </button>
+            </div>
+
+            <div class="salary-circle">
+                <strong>PAID</strong>
+            </div>
+
+        </section>
+
+        <section class="payroll-summary-grid">
+
+            <div class="payroll-summary-card">
+                <span>GROSS EARNINGS</span>
+                <h3>₹85,000</h3>
+                <p style="font-size:11px;color:var(--muted);">Monthly earnings</p>
+            </div>
+
+            <div class="payroll-summary-card">
+                <span>DEDUCTIONS</span>
+                <h3>₹12,500</h3>
+                <p style="font-size:11px;color:var(--muted);">Taxes & contributions</p>
+            </div>
+
+            <div class="payroll-summary-card">
+                <span>NET PAY</span>
+                <h3>₹72,500</h3>
+                <p style="font-size:11px;color:var(--muted);">Amount credited</p>
+            </div>
+
+        </section>
+
+        <section class="payroll-layout">
+
+            <div class="content-card">
+
+                <span class="section-kicker">SALARY BREAKDOWN</span>
+                <h2 style="margin:8px 0 15px;">Where your salary goes</h2>
+
+                <div class="salary-row">
+                    <div><strong>Basic Salary</strong><p style="font-size:11px;color:var(--muted);">Base compensation</p></div>
+                    <strong>₹50,000</strong>
+                </div>
+
+                <div class="salary-row">
+                    <div><strong>House Rent Allowance</strong><p style="font-size:11px;color:var(--muted);">Monthly HRA</p></div>
+                    <strong>₹20,000</strong>
+                </div>
+
+                <div class="salary-row">
+                    <div><strong>Special Allowance</strong><p style="font-size:11px;color:var(--muted);">Additional benefits</p></div>
+                    <strong>₹15,000</strong>
+                </div>
+
+                <div class="salary-row">
+                    <div><strong>Provident Fund</strong><p style="font-size:11px;color:var(--muted);">Employee contribution</p></div>
+                    <strong style="color:var(--red);">- ₹5,000</strong>
+                </div>
+
+                <div class="salary-row">
+                    <div><strong>Income & Professional Tax</strong><p style="font-size:11px;color:var(--muted);">Monthly deduction</p></div>
+                    <strong style="color:var(--red);">- ₹7,500</strong>
+                </div>
+
+                <div class="net-total">
+                    <span>Final Net Salary</span>
+                    <strong>₹72,500</strong>
+                </div>
+
+            </div>
+
+            <div class="insight-card">
+                <span class="section-kicker" style="color:#c7c1ff;">DAYFLOW INSIGHT</span>
+                <h2 style="margin-top:10px;">Salary clarity.</h2>
+                <p>85.3% of your gross earnings were credited after deductions.</p>
+
+                <div class="insight-number">85%</div>
+                <span style="font-size:11px;color:#d4d0ef;">NET PAY RATIO</span>
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+<script src="js/payroll.js"></script>
+
+</body>
+</html>
