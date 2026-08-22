@@ -1,0 +1,61 @@
+name: Run HR-data migrations
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: dayflow_hrms
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres" --health-interval 5s --health-timeout 5s --health-retries 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Wait for Postgres
+        run: |
+          echo "Waiting for Postgres to be ready..."
+          for i in {1..30}; do
+            pg_isready -h localhost -p 5432 -U postgres && break || sleep 2
+          done
+
+      - name: Install psql client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+
+      - name: Run migrations
+        env:
+          PGPASSWORD: postgres
+        run: |
+          set -e
+          echo "Applying migrations from database/hr-data/migrations"
+          for f in database/hr-data/migrations/*.sql; do
+            echo "-> $f"
+            psql -h localhost -U postgres -d dayflow_hrms -f "$f"
+          done
+          if [ -f database/hr-data/seed/seed_data.sql ]; then
+            echo "Applying seed"
+            psql -h localhost -U postgres -d dayflow_hrms -f database/hr-data/seed/seed_data.sql
+          else
+            echo "No seed file found"
+          fi
+
+      - name: List example view
+        env:
+          PGPASSWORD: postgres
+        run: |
+          echo "Example query: v_employee_directory rows:"
+          psql -h localhost -U postgres -d dayflow_hrms -c "SELECT count(*) FROM information_schema.tables;"
