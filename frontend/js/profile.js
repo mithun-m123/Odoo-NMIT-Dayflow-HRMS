@@ -135,3 +135,4 @@ if (saveBtn) {
 // ─── Init ─────────────────────────────────────────────────────────────────────
 
 loadProfile();
+initNotificationBell();

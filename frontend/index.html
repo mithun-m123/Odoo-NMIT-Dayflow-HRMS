@@ -34,6 +34,7 @@
         <div class="nav-section">
             <p class="nav-label">PERSONAL</p>
             <a href="profile.html" class="nav-link"><span>◉</span><span>My Profile</span></a>
+            <a href="admin.html" class="nav-link nav-link-admin" id="adminLink" style="display:none;"><span>⚙</span><span>Admin Portal</span></a>
         </div>
 
         <div style="padding:20px 16px 10px;">
@@ -56,13 +57,23 @@
                 <p>Everything you need for a smooth workday, in one flow.</p>
             </div>
 
-            <div class="user-menu">
-                <div class="user-avatar" id="userAvatarText">U</div>
-                <div>
-                    <strong id="userFullName">Loading…</strong>
-                    <span id="userDesignation">Employee</span>
+            <div style="display:flex;align-items:center;gap:12px;">
+                <!-- Notification Bell -->
+                <div class="bell-wrap">
+                  <button class="bell-btn" id="notifBell" title="Notifications">🔔<span class="notif-badge" id="notifBadge"></span></button>
+                  <div class="notif-dropdown" id="notifDropdown">
+                    <div class="notif-header"><strong>Notifications</strong><button class="notif-mark-all" id="markAllReadBtn">Mark all read</button></div>
+                    <div class="notif-list"></div>
+                  </div>
                 </div>
-                <button id="logoutBtn" style="margin-left:16px;background:#29294a;color:#b7b7c8;border:none;padding:8px 14px;border-radius:10px;cursor:pointer;font-size:12px;">Sign out</button>
+                <div class="user-menu">
+                    <div class="user-avatar" id="userAvatarText">U</div>
+                    <div>
+                        <strong id="userFullName">Loading…</strong>
+                        <span id="userDesignation">Employee</span>
+                    </div>
+                    <button id="logoutBtn" style="margin-left:16px;background:#29294a;color:#b7b7c8;border:none;padding:8px 14px;border-radius:10px;cursor:pointer;font-size:12px;">Sign out</button>
+                </div>
             </div>
         </header>
 

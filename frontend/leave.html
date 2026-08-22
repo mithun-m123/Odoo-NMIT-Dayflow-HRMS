@@ -44,6 +44,15 @@
                 <h1>Take time. <span>Stay in flow.</span></h1>
                 <p>Plan, request and track your time away from work.</p>
             </div>
+            <div style="display:flex;align-items:center;gap:12px;">
+              <div class="bell-wrap">
+                <button class="bell-btn" id="notifBell" title="Notifications">🔔<span class="notif-badge" id="notifBadge"></span></button>
+                <div class="notif-dropdown" id="notifDropdown">
+                  <div class="notif-header"><strong>Notifications</strong><button class="notif-mark-all" id="markAllReadBtn">Mark all read</button></div>
+                  <div class="notif-list"></div>
+                </div>
+              </div>
+            </div>
         </header>
 
         <section class="leave-balance-grid">

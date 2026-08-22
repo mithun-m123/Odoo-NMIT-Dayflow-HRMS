@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dayflow | Admin Portal</title>
+<link rel="stylesheet" href="css/style.css">
+<style>
+/* ── Admin-specific styles ─────────────────────────────────────── */
+.admin-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  border-bottom: 2px solid var(--border);
+  padding-bottom: 0;
+}
+.admin-tab {
+  padding: 10px 20px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  transition: .2s;
+}
+.admin-tab.active {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+}
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* Leave queue */
+.leave-queue { display: flex; flex-direction: column; gap: 14px; }
+.leave-card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px 24px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 16px;
+  align-items: center;
+  transition: box-shadow .2s;
+}
+.leave-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,.06); }
+.leave-card.decided { opacity: .65; }
+.leave-card-left { display: flex; gap: 16px; align-items: flex-start; }
+.leave-avatar {
+  width: 44px; height: 44px; border-radius: 12px;
+  background: linear-gradient(135deg, #635bff, #a855f7);
+  color: white; font-size: 17px; font-weight: bold;
+  display: grid; place-items: center; flex-shrink: 0;
+}
+.leave-card-meta strong { display: block; font-size: 14px; }
+.leave-card-meta span  { color: var(--muted); font-size: 12px; }
+.leave-card-meta .leave-tags { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+.leave-tag {
+  padding: 3px 10px; border-radius: 20px;
+  font-size: 11px; font-weight: 600; background: #f0eeff; color: var(--primary);
+}
+.leave-tag.sick    { background: #fff3db; color: var(--orange); }
+.leave-tag.unpaid  { background: #f3f4f6; color: #6b7280; }
+.leave-tag.days    { background: #e4f8ef; color: var(--green); }
+.leave-card-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+.btn-approve {
+  background: var(--green); color: white; border: none;
+  padding: 9px 18px; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 13px;
+}
+.btn-reject {
+  background: white; color: var(--red); border: 1.5px solid var(--red);
+  padding: 9px 18px; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 13px;
+}
+.btn-approve:hover { filter: brightness(1.1); }
+.btn-reject:hover  { background: #fff0f0; }
+.btn-approve:disabled, .btn-reject:disabled { opacity: .5; cursor: not-allowed; }
+.leave-remarks {
+  margin-top: 8px; font-size: 12px; color: var(--muted);
+  background: var(--bg); padding: 8px 12px; border-radius: 8px;
+}
+.comment-input {
+  width: 200px; padding: 8px 12px;
+  border: 1px solid var(--border); border-radius: 8px;
+  font-size: 12px; outline: none;
+}
+.comment-input:focus { border-color: var(--primary); }
+
+/* Stats banner */
+.admin-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.admin-stat-card {
+  background: white; border: 1px solid var(--border);
+  border-radius: 16px; padding: 18px 20px;
+}
+.admin-stat-card .stat-num { font-size: 28px; font-weight: 700; margin: 6px 0; }
+.admin-stat-card .stat-lbl { font-size: 10px; color: var(--muted); letter-spacing: 1px; }
+.admin-stat-card .stat-icon { font-size: 22px; }
+
+/* Employee table */
+.data-table { width: 100%; border-collapse: collapse; }
+.data-table th {
+  text-align: left; padding: 12px 16px;
+  font-size: 10px; letter-spacing: 1px; color: var(--muted);
+  border-bottom: 2px solid var(--border);
+}
+.data-table td { padding: 14px 16px; font-size: 13px; border-bottom: 1px solid var(--border); }
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tr:hover td { background: #fafafa; }
+.emp-avatar-sm {
+  width: 32px; height: 32px; border-radius: 8px;
+  background: linear-gradient(135deg, #635bff, #a855f7);
+  color: white; font-size: 12px; font-weight: bold;
+  display: inline-grid; place-items: center; margin-right: 10px;
+  vertical-align: middle;
+}
+
+/* Filter bar */
+.filter-bar {
+  display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; align-items: center;
+}
+.filter-bar select, .filter-bar input {
+  padding: 9px 14px; border: 1px solid var(--border);
+  border-radius: 10px; font-size: 13px; outline: none;
+  background: white;
+}
+.filter-bar select:focus, .filter-bar input:focus { border-color: var(--primary); }
+
+/* Notification bell */
+.bell-wrap { position: relative; }
+.bell-btn {
+  background: white; border: 1px solid var(--border);
+  border-radius: 12px; padding: 8px 12px; cursor: pointer;
+  font-size: 18px; position: relative; display: flex; align-items: center;
+}
+.notif-badge {
+  position: absolute; top: -6px; right: -6px;
+  background: var(--red); color: white;
+  font-size: 9px; font-weight: bold;
+  min-width: 18px; height: 18px; border-radius: 9px;
+  display: none; align-items: center; justify-content: center;
+  padding: 0 4px;
+}
+.notif-dropdown {
+  position: absolute; right: 0; top: calc(100% + 8px);
+  width: 340px; background: white; border: 1px solid var(--border);
+  border-radius: 16px; box-shadow: 0 12px 40px rgba(0,0,0,.12);
+  z-index: 500; display: none; overflow: hidden;
+}
+.notif-header {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 16px 18px; border-bottom: 1px solid var(--border);
+}
+.notif-header strong { font-size: 14px; }
+.notif-mark-all {
+  font-size: 11px; color: var(--primary);
+  background: none; border: none; cursor: pointer; font-weight: 600;
+}
+.notif-list { max-height: 360px; overflow-y: auto; }
+.notif-item {
+  display: flex; gap: 12px; padding: 14px 18px;
+  border-bottom: 1px solid var(--border); cursor: pointer;
+  transition: background .15s;
+}
+.notif-item:last-child { border-bottom: none; }
+.notif-item:hover { background: #fafafa; }
+.notif-item.unread { background: #f8f7ff; }
+.notif-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--primary); flex-shrink: 0; margin-top: 5px;
+}
+.notif-dot.read { background: var(--border); }
+.notif-item strong { font-size: 13px; display: block; }
+.notif-item p  { font-size: 12px; color: var(--muted); margin-top: 2px; line-height: 1.4; }
+.notif-item span { font-size: 10px; color: #aaa; margin-top: 4px; display: block; }
+.notif-empty { padding: 24px; text-align: center; color: var(--muted); font-size: 13px; }
+
+/* Empty / loading states */
+.state-msg { text-align: center; color: var(--muted); padding: 40px; font-size: 13px; }
+
+/* Decision badge in table */
+.decision-comment { font-size: 11px; color: var(--muted); font-style: italic; margin-top: 3px; }
+</style>
+</head>
+<body>
+
+<div class="app-shell">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="brand-mark small">D</div>
+      <div><strong>Dayflow</strong><span>ADMIN PORTAL</span></div>
+    </div>
+
+    <div class="nav-section">
+      <p class="nav-label">MANAGE</p>
+      <a href="admin.html"   class="nav-link active"><span>⚙</span><span>Admin Portal</span></a>
+      <a href="index.html"   class="nav-link"><span>⌂</span><span>My Dayflow</span></a>
+      <a href="attendance.html" class="nav-link"><span>◷</span><span>Attendance</span></a>
+      <a href="leave.html"   class="nav-link"><span>☷</span><span>Leave</span></a>
+      <a href="payroll.html" class="nav-link"><span>₹</span><span>Payroll</span></a>
+    </div>
+
+    <div class="nav-section">
+      <p class="nav-label">PERSONAL</p>
+      <a href="profile.html" class="nav-link"><span>◉</span><span>My Profile</span></a>
+    </div>
+
+    <div style="padding: 16px 12px 10px; margin-top: auto;">
+      <button id="logoutBtn" style="width:100%;background:#29294a;color:#b7b7c8;border:none;padding:10px;border-radius:10px;cursor:pointer;font-size:12px;">Sign out</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="dashboard-main">
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <div>
+        <span class="section-kicker">ADMIN COMMAND CENTER</span>
+        <h1>Leave <span>Management</span></h1>
+        <p>Review, approve and track employee leave requests in real time.</p>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:14px;">
+        <!-- Notification bell -->
+        <div class="bell-wrap">
+          <button class="bell-btn" id="notifBell" title="Notifications">
+            🔔
+            <span class="notif-badge" id="notifBadge"></span>
+          </button>
+          <div class="notif-dropdown" id="notifDropdown">
+            <div class="notif-header">
+              <strong>Notifications</strong>
+              <button class="notif-mark-all" id="markAllReadBtn">Mark all read</button>
+            </div>
+            <div class="notif-list"></div>
+          </div>
+        </div>
+
+        <div class="user-menu">
+          <div class="user-avatar" id="userAvatarText">A</div>
+          <div>
+            <strong id="userFullName">Admin</strong>
+            <span id="userRole">Administrator</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- STATS BANNER -->
+    <section class="admin-stats">
+      <div class="admin-stat-card">
+        <div class="stat-icon">⏳</div>
+        <div class="stat-num" id="statPending">—</div>
+        <div class="stat-lbl">PENDING REQUESTS</div>
+      </div>
+      <div class="admin-stat-card">
+        <div class="stat-icon">✅</div>
+        <div class="stat-num" id="statApproved">—</div>
+        <div class="stat-lbl">APPROVED TODAY</div>
+      </div>
+      <div class="admin-stat-card">
+        <div class="stat-icon">👥</div>
+        <div class="stat-num" id="statEmployees">—</div>
+        <div class="stat-lbl">TOTAL EMPLOYEES</div>
+      </div>
+      <div class="admin-stat-card">
+        <div class="stat-icon">📅</div>
+        <div class="stat-num" id="statOnLeave">—</div>
+        <div class="stat-lbl">ON LEAVE TODAY</div>
+      </div>
+    </section>
+
+    <!-- TABS -->
+    <div class="admin-tabs">
+      <button class="admin-tab active" data-tab="pending">Pending Requests <span id="pendingBadge" style="background:#fef3c7;color:#b45309;padding:1px 7px;border-radius:10px;font-size:10px;margin-left:4px;"></span></button>
+      <button class="admin-tab" data-tab="history">All Leave History</button>
+      <button class="admin-tab" data-tab="employees">Employees</button>
+    </div>
+
+    <!-- TAB: PENDING -->
+    <div class="tab-panel active" id="tab-pending">
+      <div class="filter-bar">
+        <input type="text" id="pendingSearch" placeholder="Search by name or ID…" style="flex:1;max-width:280px;">
+        <select id="pendingTypeFilter">
+          <option value="">All leave types</option>
+          <option value="PAID">Annual Leave</option>
+          <option value="SICK">Sick Leave</option>
+          <option value="UNPAID">Personal Leave</option>
+        </select>
+        <button class="primary-btn" onclick="loadPendingLeaves()" style="padding:9px 16px;font-size:13px;">↺ Refresh</button>
+      </div>
+      <div class="leave-queue" id="pendingQueue">
+        <p class="state-msg">Loading pending requests…</p>
+      </div>
+    </div>
+
+    <!-- TAB: HISTORY -->
+    <div class="tab-panel" id="tab-history">
+      <div class="filter-bar">
+        <select id="historyStatusFilter">
+          <option value="">All statuses</option>
+          <option value="PENDING">Pending</option>
+          <option value="APPROVED">Approved</option>
+          <option value="REJECTED">Rejected</option>
+        </select>
+        <select id="historyTypeFilter">
+          <option value="">All types</option>
+          <option value="PAID">Annual Leave</option>
+          <option value="SICK">Sick Leave</option>
+          <option value="UNPAID">Personal Leave</option>
+        </select>
+        <button class="primary-btn" onclick="loadHistory()" style="padding:9px 16px;font-size:13px;">↺ Refresh</button>
+      </div>
+      <div class="content-card" style="overflow:auto;">
+        <table class="data-table" id="historyTable">
+          <thead>
+            <tr>
+              <th>EMPLOYEE</th>
+              <th>TYPE</th>
+              <th>FROM</th>
+              <th>TO</th>
+              <th>DAYS</th>
+              <th>STATUS</th>
+              <th>DECIDED BY</th>
+              <th>NOTE</th>
+            </tr>
+          </thead>
+          <tbody id="historyBody">
+            <tr><td colspan="8" class="state-msg">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TAB: EMPLOYEES -->
+    <div class="tab-panel" id="tab-employees">
+      <div class="filter-bar">
+        <input type="text" id="empSearch" placeholder="Search by name, ID or email…" style="flex:1;max-width:320px;">
+        <button class="primary-btn" onclick="loadEmployees()" style="padding:9px 16px;font-size:13px;">↺ Refresh</button>
+      </div>
+      <div class="content-card" style="overflow:auto;">
+        <table class="data-table" id="employeeTable">
+          <thead>
+            <tr>
+              <th>EMPLOYEE</th>
+              <th>ID</th>
+              <th>DESIGNATION</th>
+              <th>DEPARTMENT</th>
+              <th>LEAVE BALANCE</th>
+            </tr>
+          </thead>
+          <tbody id="employeeBody">
+            <tr><td colspan="5" class="state-msg">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- APPROVE/REJECT MODAL -->
+<div id="decideModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:900;display:none;align-items:center;justify-content:center;">
+  <div style="background:white;border-radius:20px;padding:32px;width:min(100%,480px);margin:20px;box-shadow:0 20px 60px rgba(0,0,0,.2);">
+    <h3 id="modalTitle" style="font-size:20px;margin-bottom:8px;"></h3>
+    <p id="modalSubtitle" style="color:var(--muted);font-size:13px;margin-bottom:20px;"></p>
+    <div class="input-group">
+      <label>Comment (optional)</label>
+      <textarea id="modalComment" rows="3" placeholder="Add a note for the employee…"></textarea>
+    </div>
+    <div style="display:flex;gap:12px;margin-top:8px;">
+      <button id="modalConfirmBtn" class="primary-btn" style="flex:1;"></button>
+      <button onclick="closeModal()" style="flex:1;border:1px solid var(--border);background:white;padding:13px;border-radius:12px;cursor:pointer;font-weight:600;">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="js/api.js"></script>
+<script src="js/admin.js"></script>
+</body>
+</html>

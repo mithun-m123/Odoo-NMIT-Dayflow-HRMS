@@ -95,6 +95,7 @@ function renderHistory(leaves) {
         <p style="font-size:11px;color:var(--muted);margin-top:4px;">
           ${leave.startDate} – ${leave.endDate}
         </p>
+        ${leave.decision?.comment ? `<p style="font-size:11px;color:var(--muted);margin-top:3px;font-style:italic;">Admin note: "${leave.decision.comment}"</p>` : ''}
       </div>
       <strong>${days} Day${days > 1 ? 's' : ''}</strong>
       <span class="status ${statusClass(leave.status)}">${statusLabel(leave.status)}</span>
@@ -216,3 +217,4 @@ if (leaveForm) {
 // ─── Init ─────────────────────────────────────────────────────────────────────
 
 loadLeaveData();
+initNotificationBell();

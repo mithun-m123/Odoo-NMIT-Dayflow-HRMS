@@ -117,3 +117,12 @@ async function loadDashboard() {
 }
 
 loadDashboard();
+
+// Show admin portal link if user is admin
+if (Auth.isAdmin()) {
+  const adminLink = document.getElementById('adminLink');
+  if (adminLink) adminLink.style.display = 'flex';
+}
+
+// Start notification bell
+initNotificationBell();

@@ -1,6 +1,7 @@
 const Leave = require('../models/Leave');
 const LeaveBalance = require('../models/LeaveBalance');
 const Attendance = require('../models/Attendance');
+const User = require('../models/User');
 const AppError = require('../utils/AppError');
 const asyncHandler = require('../utils/asyncHandler');
 const notificationService = require('../services/notificationService');
@@ -21,6 +22,11 @@ function dateRange(start, end) {
   return dates;
 }
 
+// Human-readable leave type label
+function leaveLabel(type) {
+  return type === 'PAID' ? 'Annual' : type === 'SICK' ? 'Sick' : 'Unpaid';
+}
+
 // POST /leaves
 const applyLeave = asyncHandler(async (req, res) => {
   const employeeId = req.user.employeeId;
@@ -30,7 +36,6 @@ const applyLeave = asyncHandler(async (req, res) => {
     throw new AppError(422, 'INVALID_DATE_RANGE', 'endDate cannot be before startDate');
   }
 
-  // Reject overlap with an existing pending/approved leave
   const overlap = await Leave.findOne({
     employeeId,
     status: { $in: ['PENDING', 'APPROVED'] },
@@ -56,6 +61,33 @@ const applyLeave = asyncHandler(async (req, res) => {
   }
 
   const leave = await Leave.create({ employeeId, leaveType, startDate, endDate, remarks: remarks || '' });
+
+  // ── Notify ALL admins about the new leave request ─────────────────────────
+  const admins = await User.find({ role: 'ADMIN', status: 'ACTIVE' }).select('employeeId fullName');
+  const employeeName = req.user.fullName || employeeId;
+
+  await Promise.all(
+    admins.map((admin) =>
+      notificationService.dispatch({
+        employeeId: admin.employeeId,
+        type: 'LEAVE_REQUEST',
+        targetRole: 'ADMIN',
+        title: 'New leave request',
+        body: `${employeeName} requested ${leaveLabel(leaveType)} leave from ${startDate} to ${endDate} (${requestedDays} day${requestedDays > 1 ? 's' : ''}).`,
+        meta: {
+          leaveId: leave._id,
+          requesterEmployeeId: employeeId,
+          requesterName: employeeName,
+          leaveType,
+          startDate,
+          endDate,
+          requestedDays,
+          remarks: remarks || '',
+        },
+      })
+    )
+  );
+
   res.status(201).json({ success: true, data: leave });
 });
 
@@ -98,7 +130,7 @@ const cancelLeave = asyncHandler(async (req, res) => {
   res.status(204).send();
 });
 
-// GET /leaves — admin only
+// GET /leaves — admin only, with optional employee fullName populated
 const listAllLeaves = asyncHandler(async (req, res) => {
   const filter = {};
   if (req.query.status) filter.status = req.query.status;
@@ -112,9 +144,24 @@ const listAllLeaves = asyncHandler(async (req, res) => {
     Leave.countDocuments(filter),
   ]);
 
+  // Enrich with employee names
+  const employeeIds = [...new Set(items.map((l) => l.employeeId))];
+  const users = await User.find({ employeeId: { $in: employeeIds } }).select('employeeId fullName jobDetails');
+  const userMap = Object.fromEntries(users.map((u) => [u.employeeId, u]));
+
+  const enriched = items.map((l) => {
+    const u = userMap[l.employeeId];
+    return {
+      ...l.toObject(),
+      employeeName: u?.fullName || l.employeeId,
+      department: u?.jobDetails?.department || '',
+      designation: u?.jobDetails?.designation || '',
+    };
+  });
+
   res.status(200).json({
     success: true,
-    data: { items, pagination: { page, limit, total, totalPages: Math.ceil(total / limit) } },
+    data: { items: enriched, pagination: { page, limit, total, totalPages: Math.ceil(total / limit) } },
   });
 });
 
@@ -143,7 +190,6 @@ const decideLeave = asyncHandler(async (req, res) => {
       );
     }
 
-    // Sync attendance for each day of the approved leave
     const dates = dateRange(leave.startDate, leave.endDate);
     await Promise.all(
       dates.map((date) =>
@@ -156,13 +202,23 @@ const decideLeave = asyncHandler(async (req, res) => {
     );
   }
 
+  // ── Notify the employee about the decision ────────────────────────────────
+  const commentText = comment ? ` Admin note: "${comment}"` : '';
   await notificationService.dispatch({
     employeeId: leave.employeeId,
     type: 'LEAVE_STATUS_CHANGED',
-    title: `Leave request ${decision.toLowerCase()}`,
-    body: `Your ${leave.leaveType.toLowerCase()} leave from ${leave.startDate} to ${leave.endDate} was ${decision.toLowerCase()}.`,
-    meta: { leaveId: leave._id },
+    targetRole: 'EMPLOYEE',
+    title: `Leave ${decision === 'APPROVED' ? '✅ Approved' : '❌ Rejected'}`,
+    body: `Your ${leaveLabel(leave.leaveType)} leave from ${leave.startDate} to ${leave.endDate} was ${decision.toLowerCase()}.${commentText}`,
+    meta: { leaveId: leave._id, decision, comment: comment || '' },
   });
+
+  // ── Mark the original LEAVE_REQUEST admin notification as read ────────────
+  const Notification = require('../models/Notification');
+  await Notification.updateMany(
+    { 'meta.leaveId': leave._id, type: 'LEAVE_REQUEST' },
+    { isRead: true }
+  );
 
   res.status(200).json({ success: true, data: leave });
 });
