@@ -1,225 +1,262 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Dayflow - HRMS</title>
+    <title>Dayflow Dashboard</title>
 
     <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
 
-    <!-- LOGIN PAGE -->
-    <div id="loginPage" class="login-page">
+<div class="app-shell">
 
-        <div class="login-card">
+    <aside class="sidebar">
 
-            <h1>Dayflow</h1>
+        <div class="sidebar-logo">
+            <div class="brand-mark small">D</div>
 
-            <p class="subtitle">
-                Human Resource Management System
-            </p>
+            <div>
+                <strong>Dayflow</strong>
+                <span>EMPLOYEE PORTAL</span>
+            </div>
+        </div>
 
-            <form id="loginForm">
 
-                <label>Email / Employee ID</label>
+        <div class="nav-section">
 
-                <input
-                    type="text"
-                    id="email"
-                    placeholder="Enter email or employee ID"
-                    required
-                >
+            <p class="nav-label">WORKSPACE</p>
 
-                <label>Password</label>
+            <a href="index.html" class="nav-link active">
+                <span>⌂</span>
+                <span>My Dayflow</span>
+            </a>
 
-                <input
-                    type="password"
-                    id="password"
-                    placeholder="Enter password"
-                    required
-                >
+            <a href="attendance.html" class="nav-link">
+                <span>◷</span>
+                <span>Attendance</span>
+            </a>
 
-                <button type="submit">
-                    Sign In
-                </button>
+            <!-- Workflow does NOT go to login -->
+            <a href="#workflow" class="nav-link">
+                <span>◫</span>
+                <span>Workflow</span>
+            </a>
 
-            </form>
+            <button type="button" class="nav-link">
+                <span>☷</span>
+                <span>Leave</span>
+            </button>
 
-            <p class="demo-text">
-                Dayflow HRMS
-            </p>
+            <button type="button" class="nav-link">
+                <span>₹</span>
+                <span>Payroll</span>
+            </button>
 
         </div>
 
-    </div>
+
+        <div class="nav-section">
+
+            <p class="nav-label">PERSONAL</p>
+
+            <a href="profile.html" class="nav-link">
+                <span>◉</span>
+                <span>My Profile</span>
+            </a>
+
+        </div>
 
 
-    <!-- EMPLOYEE DASHBOARD -->
-    <div id="dashboard" class="dashboard hidden">
+        <div class="sidebar-bottom">
+            <strong>Need help?</strong>
+            <span>Contact HR Support</span>
+        </div>
 
-        <aside class="sidebar">
-
-            <h2>Dayflow</h2>
-
-            <nav>
-
-                <button class="active">
-                    🏠 Dashboard
-                </button>
-
-                <button>
-                    👤 Profile
-                </button>
-
-                <button>
-                    🕐 Attendance
-                </button>
-
-                <button>
-                    📝 Leave Requests
-                </button>
-
-                <button>
-                    💰 Payroll
-                </button>
-
-                <button id="logoutBtn">
-                    🚪 Logout
-                </button>
-
-            </nav>
-
-        </aside>
+    </aside>
 
 
-        <main class="main-content">
+    <main class="dashboard-main">
 
-            <header>
+        <header class="topbar">
+
+            <div>
+                <span class="section-kicker">GOOD MORNING</span>
+                <h1>Your day, in <span>flow.</span></h1>
+                <p>Everything you need for a productive workday.</p>
+            </div>
+
+            <div class="user-menu">
+                <div class="user-avatar">JD</div>
 
                 <div>
-                    <h1>Employee Dashboard</h1>
-
-                    <p>
-                        Welcome back to Dayflow
-                    </p>
+                    <strong>John Doe</strong>
+                    <span>Software Engineer</span>
                 </div>
+            </div>
 
-                <div class="user">
-                    👤 Employee
-                </div>
-
-            </header>
+        </header>
 
 
-            <!-- DASHBOARD CARDS -->
+        <section class="hero-card">
 
-            <section class="cards">
+            <div>
+                <span class="section-kicker">TODAY'S FLOW</span>
 
-                <div class="card">
+                <h2>Ready to make today count?</h2>
 
-                    <span>Attendance</span>
+                <p>
+                    Track your work, attendance and employee information
+                    from one simple dashboard.
+                </p>
 
-                    <h2>22 Days</h2>
+                <div class="hero-actions">
 
-                    <p>This Month</p>
+                    <a href="attendance.html" class="primary-btn">
+                        View Attendance →
+                    </a>
 
-                </div>
-
-
-                <div class="card">
-
-                    <span>Leave Balance</span>
-
-                    <h2>12 Days</h2>
-
-                    <p>Available</p>
+                    <a href="profile.html" class="secondary-btn">
+                        My Profile
+                    </a>
 
                 </div>
 
+            </div>
 
-                <div class="card">
+            <div class="hero-status">
+                <div class="status-circle">✓</div>
+                <strong>IN FLOW</strong>
+                <span>Working Today</span>
+            </div>
 
-                    <span>Leave Requests</span>
+        </section>
 
-                    <h2>2</h2>
 
-                    <p>Pending</p>
+        <section class="stats-grid">
 
+            <div class="stat-card">
+                <span>WORK TIME</span>
+                <h2>04h 38m</h2>
+                <p>● Currently working</p>
+            </div>
+
+            <div class="stat-card">
+                <span>LEAVE BALANCE</span>
+                <h2>12 Days</h2>
+                <p>Available this year</p>
+            </div>
+
+            <div class="stat-card">
+                <span>ATTENDANCE</span>
+                <h2>88%</h2>
+                <p>This month's attendance</p>
+            </div>
+
+            <div class="stat-card">
+                <span>NEXT PAYDAY</span>
+                <h2>6 Days</h2>
+                <p>Salary cycle in progress</p>
+            </div>
+
+        </section>
+
+
+        <section class="content-card" id="workflow">
+
+            <div class="card-heading">
+                <div>
+                    <span class="section-kicker">YOUR WORKFLOW</span>
+                    <h2>Today's rhythm</h2>
                 </div>
+            </div>
 
 
-                <div class="card">
+            <div class="workflow-list">
 
-                    <span>Payroll</span>
+                <div class="workflow-item">
+                    <div class="workflow-icon completed">✓</div>
 
-                    <h2>Ready</h2>
-
-                    <p>Current Month</p>
-
-                </div>
-
-            </section>
-
-
-            <!-- CONTENT -->
-
-            <section class="content">
-
-                <div class="panel">
-
-                    <h2>Recent Activity</h2>
-
-                    <div class="activity">
-                        <span>Check-in completed</span>
-                        <b class="success">Present</b>
+                    <div>
+                        <strong>Check In</strong>
+                        <span>Completed at 09:12 AM</span>
                     </div>
 
-                    <div class="activity">
-                        <span>Leave request submitted</span>
-                        <b class="warning">Pending</b>
-                    </div>
-
-                    <div class="activity">
-                        <span>Salary slip available</span>
-                        <b class="success">Ready</b>
-                    </div>
-
+                    <b>DONE</b>
                 </div>
 
 
-                <div class="panel">
+                <div class="workflow-item">
+                    <div class="workflow-icon working">●</div>
 
-                    <h2>Quick Access</h2>
+                    <div>
+                        <strong>Focus Time</strong>
+                        <span>Currently working</span>
+                    </div>
 
-                    <button class="quick-btn">
-                        👤 View Profile
-                    </button>
-
-                    <button class="quick-btn">
-                        🕐 View Attendance
-                    </button>
-
-                    <button class="quick-btn">
-                        📝 Apply for Leave
-                    </button>
-
-                    <button class="quick-btn">
-                        💰 View Salary
-                    </button>
-
+                    <b>NOW</b>
                 </div>
 
-            </section>
 
-        </main>
+                <div class="workflow-item">
+                    <div class="workflow-icon">○</div>
 
-    </div>
+                    <div>
+                        <strong>Check Out</strong>
+                        <span>Expected by 06:00 PM</span>
+                    </div>
+
+                    <b>LATER</b>
+                </div>
+
+            </div>
+
+        </section>
 
 
-    <script src="js/app.js"></script>
+        <section class="quick-section">
+
+            <span class="section-kicker">QUICK ACTIONS</span>
+            <h2>Get things done</h2>
+
+            <div class="quick-grid">
+
+                <a href="attendance.html" class="quick-card">
+                    <div>◷</div>
+                    <strong>Attendance</strong>
+                    <span>Track your workday</span>
+                </a>
+
+                <a href="profile.html" class="quick-card">
+                    <div>◉</div>
+                    <strong>My Profile</strong>
+                    <span>View your details</span>
+                </a>
+
+                <div class="quick-card">
+                    <div>☷</div>
+                    <strong>Apply Leave</strong>
+                    <span>Coming soon</span>
+                </div>
+
+                <div class="quick-card">
+                    <div>₹</div>
+                    <strong>Payroll</strong>
+                    <span>Coming soon</span>
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+<script src="js/app.js"></script>
 
 </body>
 </html>

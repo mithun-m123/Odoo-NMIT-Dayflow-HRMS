@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Dayflow Profile</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+<div class="app-shell">
+
+    <aside class="sidebar">
+
+        <div class="sidebar-logo">
+            <div class="brand-mark small">D</div>
+
+            <div>
+                <strong>Dayflow</strong>
+                <span>EMPLOYEE PORTAL</span>
+            </div>
+        </div>
+
+        <div class="nav-section">
+
+            <p class="nav-label">WORKSPACE</p>
+
+            <a href="index.html" class="nav-link">
+                <span>⌂</span>
+                <span>My Dayflow</span>
+            </a>
+
+            <a href="attendance.html" class="nav-link">
+                <span>◷</span>
+                <span>Attendance</span>
+            </a>
+
+            <a href="index.html#workflow" class="nav-link">
+                <span>◫</span>
+                <span>Workflow</span>
+            </a>
+
+        </div>
+
+        <div class="nav-section">
+
+            <p class="nav-label">PERSONAL</p>
+
+            <a href="profile.html" class="nav-link active">
+                <span>◉</span>
+                <span>My Profile</span>
+            </a>
+
+        </div>
+
+    </aside>
+
+
+    <main class="dashboard-main">
+
+        <header class="topbar">
+
+            <div>
+                <span class="section-kicker">PERSONAL SPACE</span>
+                <h1>My <span>Profile</span></h1>
+                <p>Manage your personal and work information.</p>
+            </div>
+
+            <div class="user-menu">
+                <div class="user-avatar">JD</div>
+
+                <div>
+                    <strong>John Doe</strong>
+                    <span>Software Engineer</span>
+                </div>
+            </div>
+
+        </header>
+
+
+        <section class="profile-hero">
+
+            <div class="large-avatar">JD</div>
+
+            <div>
+                <span class="section-kicker">EMPLOYEE PROFILE</span>
+                <h2>John Doe</h2>
+                <p>Software Engineer · Engineering Department</p>
+
+                <div class="profile-badges">
+                    <span>● Active Employee</span>
+                    <span>EMP-2026-0142</span>
+                </div>
+            </div>
+
+            <button class="primary-btn edit-btn" id="editBtn">
+                Edit Profile
+            </button>
+
+        </section>
+
+
+        <section class="profile-health">
+
+            <div>
+                <span class="section-kicker">PROFILE HEALTH</span>
+                <h2>Your profile is <span>85% complete</span></h2>
+                <p>Keep your information updated for a better HR experience.</p>
+            </div>
+
+            <div class="percentage">85%</div>
+
+        </section>
+
+
+        <div class="profile-grid">
+
+            <section class="content-card">
+
+                <span class="section-kicker">PERSONAL INFORMATION</span>
+                <h2>Your details</h2>
+
+                <div class="detail">
+                    <span>FULL NAME</span>
+                    <strong>John Doe</strong>
+                </div>
+
+                <div class="detail">
+                    <span>EMAIL ADDRESS</span>
+                    <strong>john@dayflow.com</strong>
+                </div>
+
+                <div class="detail">
+                    <span>PHONE NUMBER</span>
+                    <strong>+91 98765 43210</strong>
+                </div>
+
+                <div class="detail">
+                    <span>LOCATION</span>
+                    <strong>Bengaluru, Karnataka</strong>
+                </div>
+
+            </section>
+
+
+            <section class="content-card">
+
+                <span class="section-kicker">WORK INFORMATION</span>
+                <h2>Your workplace</h2>
+
+                <div class="detail">
+                    <span>DEPARTMENT</span>
+                    <strong>Engineering</strong>
+                </div>
+
+                <div class="detail">
+                    <span>DESIGNATION</span>
+                    <strong>Software Engineer</strong>
+                </div>
+
+                <div class="detail">
+                    <span>JOINING DATE</span>
+                    <strong>15 January 2025</strong>
+                </div>
+
+                <div class="detail">
+                    <span>EMPLOYEE ID</span>
+                    <strong>EMP-2026-0142</strong>
+                </div>
+
+            </section>
+
+        </div>
+
+    </main>
+
+</div>
+
+
+<div class="modal hidden" id="profileModal">
+
+    <div class="modal-content">
+
+        <button class="close-btn" id="closeBtn">×</button>
+
+        <span class="section-kicker">UPDATE PROFILE</span>
+
+        <h2>Edit Profile</h2>
+
+        <form id="profileForm">
+
+            <label>Full Name</label>
+            <input type="text" value="John Doe">
+
+            <label>Email</label>
+            <input type="email" value="john@dayflow.com">
+
+            <label>Phone</label>
+            <input type="text" value="+91 98765 43210">
+
+            <button type="submit" class="primary-btn">
+                Save Changes
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<script>
+
+const editBtn = document.getElementById("editBtn");
+const profileModal = document.getElementById("profileModal");
+const closeBtn = document.getElementById("closeBtn");
+
+editBtn.onclick = function () {
+    profileModal.classList.remove("hidden");
+};
+
+closeBtn.onclick = function () {
+    profileModal.classList.add("hidden");
+};
+
+document.getElementById("profileForm").onsubmit = function(e) {
+    e.preventDefault();
+    alert("Profile updated successfully!");
+    profileModal.classList.add("hidden");
+};
+
+</script>
+
+</body>
+</html>
