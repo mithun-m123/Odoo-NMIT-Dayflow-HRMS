@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Dayflow - HRMS</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <!-- LOGIN PAGE -->
+    <div id="loginPage" class="login-page">
+
+        <div class="login-card">
+
+            <h1>Dayflow</h1>
+
+            <p class="subtitle">
+                Human Resource Management System
+            </p>
+
+            <form id="loginForm">
+
+                <label>Email / Employee ID</label>
+
+                <input
+                    type="text"
+                    id="email"
+                    placeholder="Enter email or employee ID"
+                    required
+                >
+
+                <label>Password</label>
+
+                <input
+                    type="password"
+                    id="password"
+                    placeholder="Enter password"
+                    required
+                >
+
+                <button type="submit">
+                    Sign In
+                </button>
+
+            </form>
+
+            <p class="demo-text">
+                Dayflow HRMS
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- EMPLOYEE DASHBOARD -->
+    <div id="dashboard" class="dashboard hidden">
+
+        <aside class="sidebar">
+
+            <h2>Dayflow</h2>
+
+            <nav>
+
+                <button class="active">
+                    🏠 Dashboard
+                </button>
+
+                <button>
+                    👤 Profile
+                </button>
+
+                <button>
+                    🕐 Attendance
+                </button>
+
+                <button>
+                    📝 Leave Requests
+                </button>
+
+                <button>
+                    💰 Payroll
+                </button>
+
+                <button id="logoutBtn">
+                    🚪 Logout
+                </button>
+
+            </nav>
+
+        </aside>
+
+
+        <main class="main-content">
+
+            <header>
+
+                <div>
+                    <h1>Employee Dashboard</h1>
+
+                    <p>
+                        Welcome back to Dayflow
+                    </p>
+                </div>
+
+                <div class="user">
+                    👤 Employee
+                </div>
+
+            </header>
+
+
+            <!-- DASHBOARD CARDS -->
+
+            <section class="cards">
+
+                <div class="card">
+
+                    <span>Attendance</span>
+
+                    <h2>22 Days</h2>
+
+                    <p>This Month</p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <span>Leave Balance</span>
+
+                    <h2>12 Days</h2>
+
+                    <p>Available</p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <span>Leave Requests</span>
+
+                    <h2>2</h2>
+
+                    <p>Pending</p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <span>Payroll</span>
+
+                    <h2>Ready</h2>
+
+                    <p>Current Month</p>
+
+                </div>
+
+            </section>
+
+
+            <!-- CONTENT -->
+
+            <section class="content">
+
+                <div class="panel">
+
+                    <h2>Recent Activity</h2>
+
+                    <div class="activity">
+                        <span>Check-in completed</span>
+                        <b class="success">Present</b>
+                    </div>
+
+                    <div class="activity">
+                        <span>Leave request submitted</span>
+                        <b class="warning">Pending</b>
+                    </div>
+
+                    <div class="activity">
+                        <span>Salary slip available</span>
+                        <b class="success">Ready</b>
+                    </div>
+
+                </div>
+
+
+                <div class="panel">
+
+                    <h2>Quick Access</h2>
+
+                    <button class="quick-btn">
+                        👤 View Profile
+                    </button>
+
+                    <button class="quick-btn">
+                        🕐 View Attendance
+                    </button>
+
+                    <button class="quick-btn">
+                        📝 Apply for Leave
+                    </button>
+
+                    <button class="quick-btn">
+                        💰 View Salary
+                    </button>
+
+                </div>
+
+            </section>
+
+        </main>
+
+    </div>
+
+
+    <script src="js/app.js"></script>
+
+</body>
+</html>
