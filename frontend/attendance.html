@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Dayflow Attendance</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+<div class="app-shell">
+
+    <aside class="sidebar">
+
+        <div class="sidebar-logo">
+            <div class="brand-mark small">D</div>
+
+            <div>
+                <strong>Dayflow</strong>
+                <span>EMPLOYEE PORTAL</span>
+            </div>
+        </div>
+
+        <div class="nav-section">
+
+            <p class="nav-label">WORKSPACE</p>
+
+            <a href="index.html" class="nav-link">
+                <span>⌂</span>
+                <span>My Dayflow</span>
+            </a>
+
+            <a href="attendance.html" class="nav-link active">
+                <span>◷</span>
+                <span>Attendance</span>
+            </a>
+
+            <a href="index.html#workflow" class="nav-link">
+                <span>◫</span>
+                <span>Workflow</span>
+            </a>
+
+        </div>
+
+        <div class="nav-section">
+
+            <p class="nav-label">PERSONAL</p>
+
+            <a href="profile.html" class="nav-link">
+                <span>◉</span>
+                <span>My Profile</span>
+            </a>
+
+        </div>
+
+    </aside>
+
+
+    <main class="dashboard-main">
+
+        <header class="topbar">
+
+            <div>
+                <span class="section-kicker">WORKDAY TRACKER</span>
+                <h1>My <span>Attendance</span></h1>
+                <p>Track your workday in real time.</p>
+            </div>
+
+            <div class="user-menu">
+                <div class="user-avatar">JD</div>
+
+                <div>
+                    <strong>John Doe</strong>
+                    <span>Software Engineer</span>
+                </div>
+            </div>
+
+        </header>
+
+
+        <section class="attendance-hero">
+
+            <div class="attendance-header">
+
+                <div>
+                    <span class="section-kicker">LIVE WORKDAY</span>
+                    <h2>Your day is in <span>flow.</span></h2>
+                </div>
+
+                <div class="live-badge">
+                    ● WORKING
+                </div>
+
+            </div>
+
+
+            <div class="timer-box">
+
+                <span>TODAY'S WORK TIME</span>
+
+                <h1 id="timer">04:38:20</h1>
+
+                <p>Keep the momentum going 🚀</p>
+
+            </div>
+
+
+            <div class="attendance-steps">
+
+                <div class="step completed">
+                    <div>✓</div>
+                    <strong>Check In</strong>
+                    <span>09:12 AM</span>
+                </div>
+
+                <div class="step active">
+                    <div>●</div>
+                    <strong>Working</strong>
+                    <span>In Progress</span>
+                </div>
+
+                <div class="step">
+                    <div>○</div>
+                    <strong>Check Out</strong>
+                    <span id="checkoutTime">--</span>
+                </div>
+
+            </div>
+
+
+            <button id="checkOutBtn" class="checkout-btn">
+                Check Out →
+            </button>
+
+        </section>
+
+
+        <section class="stats-grid">
+
+            <div class="stat-card">
+                <span>PRESENT DAYS</span>
+                <h2>22</h2>
+                <p>+8% from last month</p>
+            </div>
+
+            <div class="stat-card">
+                <span>AVG WORK HOURS</span>
+                <h2>8.2h</h2>
+                <p>This month's average</p>
+            </div>
+
+            <div class="stat-card">
+                <span>ATTENDANCE RATE</span>
+                <h2>88%</h2>
+                <p>Excellent consistency</p>
+            </div>
+
+        </section>
+
+
+        <section class="content-card">
+
+            <span class="section-kicker">ATTENDANCE HISTORY</span>
+            <h2>Recent workdays</h2>
+
+            <div class="history-row">
+                <strong>Today</strong>
+                <span>09:12 AM</span>
+                <span id="todayCheckout">--</span>
+                <span id="todayHours">04h 38m</span>
+                <b class="working-badge">Working</b>
+            </div>
+
+            <div class="history-row">
+                <strong>Yesterday</strong>
+                <span>09:05 AM</span>
+                <span>06:02 PM</span>
+                <span>08h 57m</span>
+                <b class="present-badge">Present</b>
+            </div>
+
+            <div class="history-row">
+                <strong>Wednesday</strong>
+                <span>09:18 AM</span>
+                <span>06:10 PM</span>
+                <span>08h 52m</span>
+                <b class="present-badge">Present</b>
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+<script src="js/attendance.js"></script>
+
+</body>
+</html>
